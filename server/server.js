@@ -5,10 +5,9 @@ var cors = require('cors');
 var path = require('path');
 app.use(cors());
 
-var bodyParser = require('body-parser');
-app.use(bodyParser.json());
+app.use(express.json()); // Parse JSON request bodies
 
-let server = http.listen(3000, function() {
+let server = http.listen(4200, function() {
     let host = server.address().address;
     let port = server.address().port;
     console.log("Server listening on port: " + port);
