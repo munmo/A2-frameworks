@@ -1,0 +1,24 @@
+.loginContainer
+{
+    display: flex;
+    justify-content: center;
+    padding-top: 5px;
+}
+label
+{
+    font-weight: bold;
+    font-size: 20px;
+}
+
+h2
+{
+    text-align: center;
+    padding:50px;
+    font-weight: bold;
+
+}
+.formGroup
+{
+    padding: 5px;
+    margin: 50px;
+}

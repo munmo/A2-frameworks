@@ -1,0 +1,28 @@
+<ng-template [ngIf]="valid">
+    <h2> Edit Details: </h2>
+    <div class="loginContainer">
+        <div class="loginForm">
+            <form>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="username" [(ngModel)]="username" name="username" class="form-control" id="username"
+                        placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label for="birthdate">Birthdate</label>
+                    <input type="date" [(ngModel)]="birthObj" name="birthObj" class="form-control" id="birthObj">
+                </div>
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" [(ngModel)]="age" name="age" class="form-control" id="age">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" [(ngModel)]="email" name="email" class="form-control" id="email"
+                        placeholder="Enter username">
+                </div>
+                <button type="submit" class="btn btn-primary" (click)="saveDetails()"> Save</button>
+            </form>
+        </div>
+    </div>
+</ng-template>

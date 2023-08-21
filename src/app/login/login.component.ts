@@ -1,53 +1,67 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
+const httpOptions =
+{
+  headers: new HttpHeaders({ 'Content-Type' : 'application/json'})
+};
+
+import {Userpwd} from "../userpwd";
+import {Userobj} from "../userobj";
+
+const BACKEND_URL = 'http://localhost:3000';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
 
   email = "";
   pwd = "";
+  userpwd: Userpwd = {email: this.email, password: this.pwd};
+  userobj: Userobj = {username: "", birthdate: "", age: 0, email: this.userpwd.email, valid: false}
 
-  users = [{"email": "abc@gmail.com", "pwd": "123"}, {"email": "def@gmail.com", "pwd": "123"}, {"email": "ghi@gmail.com", "pwd": "123"}];
-  valid = false;
-
-  constructor(private router: Router){}
+  constructor(private router: Router, private httpClient: HttpClient){}
 
   ngOnInit()
   {
-
+    
   }
 
-  checkValid()
+
+  public checkValid()
   {
-    console.log("hi");
-    for(let i =0; i < this.users.length; i++)
-    {
-      if(this.email == this.users[i].email && this.pwd == this.users[i].pwd)
+    this.userpwd.email = this.email;
+    this.userpwd.password = this.pwd;
+    this.httpClient.post(BACKEND_URL + '/api/auth', this.userpwd, httpOptions)
+    .subscribe((data:any) => {
+      alert(JSON.stringify(this.userpwd));
+      if(data.ok)
       {
-        alert("Success!");
-        this.valid = true;
-        break;
+        const userData = data.userData;
+        this.userobj.username = userData.username;
+        this.userobj.birthdate = userData.birthdate;
+        this.userobj.age = userData.age;
+        this.userobj.email = userData.email;
+        this.userobj.valid = true;
+        console.log(userData);
+
+        sessionStorage.setItem('username', this.userobj.username);
+        sessionStorage.setItem('birthdate', this.userobj.birthdate);
+        sessionStorage.setItem('age', this.userobj.age.toString());
+        sessionStorage.setItem('email', this.userobj.email);
+        sessionStorage.setItem('valid', this.userobj.valid.toString());
+        this.router.navigate(['/home'], { replaceUrl: true });
       }
-    }
-
-    if(this.valid != true)
-    {
-      alert("Error!! Does not Match Credentials");
-      this.email = "";
-      this.pwd = "";
-    }
-    else
-    {
-      this.router.navigate(['/account'], { replaceUrl: true });
-    }
-
-  }
- 
+      else
+      {
+        alert("Username and Password Credentials Do Not MATCH!");
+      }
 
 
-}
+      
+    })
+  }}

@@ -1,3 +1,22 @@
 <h1> Account </h1>
 
-<img src="../../favicon.ico" alt="icon angular">
+<ng-template [ngIf]="valid">
+    <div class="accountDiv">
+        <div class="userDiv">
+            <h2> Username: </h2>
+            <p> {{username}} </p>
+        </div>
+        <div class="userDiv">
+            <h2> Birthdate: </h2>
+            <p> {{birthdate}} </p>
+        </div>
+        <div class="userDiv">
+            <h2> Age: </h2>
+            <p> {{age}} </p>
+        </div>
+        <div class="userDiv">
+            <h2> Email: </h2>
+            <p> {{email}} </p>
+        </div>
+    </div>
+</ng-template>

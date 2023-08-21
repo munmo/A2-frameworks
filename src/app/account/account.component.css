@@ -1,0 +1,21 @@
+.accountDiv
+{
+    justify-content: center;
+    text-align:center;
+    border: 1px solid black;
+    width: 500px;
+    margin: auto;
+}
+
+h1
+{
+    font-weight: bold;
+    padding-top: 50px;
+    text-align:center;
+}
+.userDiv
+{
+    display:flex;
+    flex-direction: column;
+
+}

@@ -1,0 +1,66 @@
+#loginPage
+{
+    width: 400px;
+    height: 400px;
+    margin: auto;
+
+}
+
+img
+{
+    width: 60px;
+    height: 60px;
+    justify-content: center;
+}
+#account
+{
+    display:flex;
+    flex-direction: column;
+}
+
+#info
+{
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#form
+{
+    border: 1px solid black;
+
+}
+
+form
+{
+    border: 1px solid #8DBA6A;
+    padding: 20px;
+    text-align: center;
+    font-family: fantasy;
+    font-weight: bold;
+}
+
+#loginTitle
+{
+    text-align: center;
+}
+
+.hidemessage 
+{
+    display: none
+}
+
+.showmessage
+{
+    display: block;
+}
+
+.success
+{
+    background-color: #8DBA6A ;
+}
+
+.fail
+{
+    background-color: #BD3C25;
+}
