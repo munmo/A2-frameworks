@@ -39,15 +39,14 @@ export class RegisterComponent implements OnInit {
 
   register() {
     console.log("Register button clicked");
-    if (this.registerForm.invalid) {
-      return;
-    }
+    // if (this.registerForm.invalid) {
+    //   return;
+    // }
 
     const data = this.registerForm.value;
 
     this.userpwd.email = data.email;
     this.userpwd.password = data.pwd; // Use 'pwd' as the property name
-
     this.userobj.email = data.email;
 
     this.httpClient.post(BACKEND_URL + '/api/auth', this.userpwd, httpOptions)
