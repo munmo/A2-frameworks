@@ -37,37 +37,39 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit() {}
 
-  register() {
-    console.log("Register button clicked");
-    // if (this.registerForm.invalid) {
-    //   return;
-    // }
+ register() {
+  const newUser = {
+    username: this.registerForm.value.username,
+    birthdate: null,
+    age: null,
+    email: this.registerForm.value.email,
+    pwd: this.registerForm.value.pwd, // Use 'pwd' as the property name
+    valid: false
+  };
 
-    const data = this.registerForm.value;
+  this.httpClient.post(BACKEND_URL + '/api/auth', newUser, httpOptions)
+    .subscribe({
+      next: (response: any) => {
+        if (response.ok) {
+          console.log("Response from backend:", response);
 
-    this.userpwd.email = data.email;
-    this.userpwd.password = data.pwd; // Use 'pwd' as the property name
-    this.userobj.email = data.email;
-
-    this.httpClient.post(BACKEND_URL + '/api/auth', this.userpwd, httpOptions)
-      .subscribe({
-        next: (response: any) => {
-          if (response.ok) {
-            console.log("Response from backend:", response); //test
-
-            alert('Registration successful!');
-            // Store user email in local storage
-            localStorage.setItem('userEmail', this.userobj.email);
-            console.log("Navigating to login page..."); //test
-            this.router.navigate(['/login']);
-          } else {
-            alert('Registration failed: ' + response.error);
+          alert('Registration successful!');
+          // Store user email in local storage
+          localStorage.setItem('userEmail', newUser.email);
+          console.log("Navigating to login page...");
+          this.router.navigate(['/login']);
+        } else {
+          alert('Registration failed: ' + response.error);
+          if (response.error === 'Email already registered') {
+            this.registerForm.controls['email'].setErrors({ emailExists: true });
           }
-        },
-        error: (error) => {
-          console.error('Error during registration:', error);
-          alert('Registration failed: An error occurred. Please try again.');
         }
-      });
-  }
+      },
+      error: (error) => {
+        console.error('Error during registration:', error);
+        alert('Registration failed: An error occurred. Please try again.');
+      }
+    });
+}
+
 }

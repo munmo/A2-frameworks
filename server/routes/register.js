@@ -3,10 +3,8 @@ const fs = require('fs').promises;
 module.exports = async function (req, res) {
     const newUser = {
         username: req.body.username,
-        birthdate: req.body.birthdate,
-        age: req.body.age,
         email: req.body.email,
-        pwd: req.body.password,
+        pwd: req.body.pwd, // Use 'pwd' as the property name
         valid: false
     };
 
