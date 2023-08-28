@@ -21,16 +21,12 @@ export class AppComponent implements OnInit {
   public valid: boolean = false;
   //newValid$: Observable<boolean> = of(false);
 
-  constructor(private router:Router){
-  }
-
-
-  
+  constructor(private router:Router){}
 
   ngOnInit()
   {
   
-    this.valid = Boolean(sessionStorage.getItem('valid')) || false;
+    this.valid = Boolean(localStorage.getItem('valid')) || false;
 
     //OBSERVABLES 
     // this.newValid$ = new Observable(subscriber => {
@@ -65,18 +61,18 @@ export class AppComponent implements OnInit {
   //Use this to check if user is logged in or not (will be called from HTML) 
   isLoggedIn()
   {
-    return Boolean(sessionStorage.getItem('valid')) || false;
+    return Boolean(localStorage.getItem('valid')) || false;
   }
 
   logOut()
   {
-    sessionStorage.clear();
+    localStorage.clear();
     this.router.navigate(['/login'], { replaceUrl: true });
   }
 
   userLog()
   { 
-    this.valid = Boolean(sessionStorage.getItem('valid')) || false;
+    this.valid = Boolean(localStorage.getItem('valid')) || false;
 
     console.log(this.valid);
     if(this.valid == true)
@@ -89,6 +85,4 @@ export class AppComponent implements OnInit {
       alert("You Are Already On the Login Page");
     }
   }
-
 }
-

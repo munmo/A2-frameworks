@@ -10,11 +10,11 @@ import { Router } from '@angular/router';
 export class AccountComponent implements OnInit {
 
 
-  username = sessionStorage.getItem('username') || "";
-  birthdate = sessionStorage.getItem('birthdate') || "";
-  age = Number(sessionStorage.getItem('age')) || 0;
-  email = sessionStorage.getItem('email') || ""; 
-  valid = Boolean(sessionStorage.getItem('valid')) || false;
+  username = localStorage.getItem('username') || "";
+  birthdate = localStorage.getItem('birthdate') || "";
+  age = Number(localStorage.getItem('age')) || 0;
+  email = localStorage.getItem('email') || ""; 
+  valid = Boolean(localStorage.getItem('valid')) || false;
 
   ngOnInit(){
     if(this.valid != true)
