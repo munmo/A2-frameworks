@@ -16,7 +16,7 @@ export interface Observer<T>
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  title = 'week4tut';
+  title = 'Chat';
   paramsub: any;
   public valid: boolean = false;
   //newValid$: Observable<boolean> = of(false);
@@ -68,6 +68,11 @@ export class AppComponent implements OnInit {
   {
     localStorage.clear();
     this.router.navigate(['/login'], { replaceUrl: true });
+  }
+
+  group()
+  {
+    this.router.navigate(['/chat'], { replaceUrl: true });
   }
 
   userLog()

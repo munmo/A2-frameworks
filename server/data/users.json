@@ -1,22 +1,19 @@
 {
-    "users": [
-        {
-            "username": "abc", 
-            "email": "abc@gmail.com", 
-            "pwd": "123",
-            "valid": false
-        },
-        {
-            "username": "def",
-            "email": "def@gmail.com",
-            "pwd": "123",
-            "valid": false
-        },
-        {
-            "username": "ghi",
-            "email": "ghi@gmail.com",
-            "pwd": "123",
-            "valid": false
-        }
-    ]
+  "users": [
+    {
+      "username": "Super",
+      "email": "super@gmail.com",
+      "pwd": "123",
+      "roles": [
+        "Super"
+      ],
+      "valid": false
+    },
+    {
+      "username": "abc",
+      "email": "abc@gmail.com",
+      "pwd": "123",
+      "valid": false
+    }
+  ]
 }

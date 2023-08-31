@@ -1,0 +1,31 @@
+<div id="chatGroups">
+    <!-- List of chat groups will be displayed here -->
+</div>
+
+<div id="createGroupContainer" *ngIf="(isAllowedToCreateGroup | async)">
+    <button (click)="openCreateGroupModal()">Create Group</button>
+</div>
+
+<!-- Modal for creating a group -->
+<div id="createGroupModal" *ngIf="isModalOpen">
+    <div class="modal-content">
+        <h2>Create Group</h2>
+        <form [formGroup]="createGroupForm">
+            <label for="groupName">Group Name:</label>
+            <input type="text" id="groupName" formControlName="groupName" required>
+
+            <label for="description">Description:</label>
+            <textarea id="description" formControlName="description"></textarea>
+
+            <label for="users">Add Users:</label>
+            <input type="text" id="users" [formControl]="newUserControl" (keyup.enter)="addUserToGroup()">
+
+            <ul>
+                <li *ngFor="let user of newGroupData.users">{{ user }}</li>
+            </ul>
+
+            <button type="button" (click)="closeCreateGroupModal()">Cancel</button>
+            <button type="button" (click)="createGroup()">Create</button>
+        </form>
+    </div>
+</div>

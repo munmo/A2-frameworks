@@ -11,8 +11,8 @@ export class AccountComponent implements OnInit {
 
 
   username = localStorage.getItem('username') || "";
-  birthdate = localStorage.getItem('birthdate') || "";
-  age = Number(localStorage.getItem('age')) || 0;
+  // birthdate = localStorage.getItem('birthdate') || "";
+  // age = Number(localStorage.getItem('age')) || 0;
   email = localStorage.getItem('email') || ""; 
   valid = Boolean(localStorage.getItem('valid')) || false;
 

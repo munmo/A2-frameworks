@@ -19,8 +19,8 @@ const BACKEND_URL = 'http://localhost:3000';
 })
 export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
-  userpwd: Userpwd = { email: '', password: '' }; 
-  userobj: Userobj = { username: '', email: '', valid: false };
+  userpwd: Userpwd = { email: '', password: ''}; 
+  userobj: Userobj = { username: '', email: '', valid: false, roles:[''] };
 
   constructor(
     private router: Router,
@@ -48,16 +48,18 @@ export class RegisterComponent implements OnInit {
     this.userpwd.email = data.email;
     this.userpwd.password = data.pwd; // Use 'pwd' as the property name
     this.userobj.email = data.email;
+    this.userobj.username = data.username;
 
     this.httpClient.post(BACKEND_URL + '/api/auth', this.userpwd, httpOptions)
       .subscribe({
         next: (response: any) => {
           if (response.ok) {
             console.log("Response from backend:", response); //test
-
+                console.log("Sending registration data:", data);
             alert('Registration successful!');
             // Store user email in local storage
             localStorage.setItem('userEmail', this.userobj.email);
+            localStorage.setItem('username', this.userobj.username);
             console.log("Navigating to login page..."); //test
             this.router.navigate(['/login']);
           } else {

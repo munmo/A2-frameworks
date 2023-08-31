@@ -1,12 +1,3 @@
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced. * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * Delete the template below * * * * * * * * * * -->
-<!-- * * * * * * * to get started with your project! * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="navbar-brand active" routerLink="/"> Home</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -33,6 +24,12 @@
           <button type="submit" class="btn btn-primary" (click)="logOut()"> LogOut</button>
         </li>
       </ng-container>
+      <ng-container *ngIf="isLoggedIn()">
+        <li class="nav-item" *ngIf="isLoggedIn()">
+          <button type="submit" class="btn btn-primary" (click)="group()"> Chat </button>
+        </li>
+      </ng-container>
+      
     </ul>
   </div>
 </nav>

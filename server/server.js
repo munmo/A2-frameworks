@@ -1,17 +1,25 @@
-var express = require('express'); //Used for routing 
-var app = express();
-var http = require('http').Server(app); //Used to provide http functionality 
-var cors = require('cors');
-var path = require('path');
+const express = require('express');
+const app = express();
+const http = require('http').Server(app);
+const cors = require('cors');
+
 app.use(cors());
+app.use(express.json());
 
-app.use(express.json()); 
+// Import your routes
+const usersRouter = require('./routes/users');
+const groupsRouter = require('./routes/groups/addGroup'); 
 
-let server = http.listen(3000, function() {
-    let host = server.address().address;
-    let port = server.address().port;
+// Other routes (login, register, etc.)
+app.post('/api/auth/login', require('./routes/login'));
+app.post('/api/auth', require('./routes/register'));
+app.post('/api/auth/users', require('./routes/users'));
+
+app.use('/api/auth', usersRouter);
+app.use('/api/auth/groups/addGroup', groupsRouter); // Use the groupsRouter for groups routes
+
+const server = http.listen(3000, () => {
+    const host = server.address().address;
+    const port = server.address().port;
     console.log("Server listening on port: " + port);
 });
-
-app.post('/api/auth', require('./routes/login'));
-app.post('/api/auth', require('./routes/register'));

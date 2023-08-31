@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit {
   email = "";
   pwd = "";
   userpwd: Userpwd = {email: this.email, password: this.pwd};
-  userobj: Userobj = {username: "", email: this.userpwd.email, valid: false}
+  userobj: Userobj = {username: "", email: this.userpwd.email, valid: false, roles:[''] }
 
   constructor(private router: Router, private httpClient: HttpClient){}
 
@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit {
   {
     this.userpwd.email = this.email;
     this.userpwd.password = this.pwd;
-    this.httpClient.post(BACKEND_URL + '/api/auth', this.userpwd, httpOptions)
+    this.httpClient.post(BACKEND_URL + '/api/auth/login', this.userpwd, httpOptions)
     .subscribe((data:any) => {
       // alert(JSON.stringify(this.userpwd));
       if(data.ok)
