@@ -50,7 +50,7 @@ export class ChatComponent implements OnInit {
 }
 
   fetchUserRoles(): Observable<boolean> {
-    return this.http.get<any>(BACKEND_URL + '/api/users').pipe(
+    return this.http.get<any>(BACKEND_URL + '/api/auth/users').pipe(
       map(user => user.roles.includes('Super') || user.roles.includes('Group')),
       catchError(error => {
         console.error('Error fetching user data:', error);//ERROR HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -83,7 +83,7 @@ export class ChatComponent implements OnInit {
       const groupData = this.createGroupForm.value;
       groupData.users = this.newGroupData.users;
 
-      this.http.post<any>(BACKEND_URL + '/api/groups/addGroup', groupData).subscribe(
+      this.http.post<any>(BACKEND_URL + '/api/auth/addGroup', groupData).subscribe(
         response => {
           console.log('Group created successfully:', response);
           this.closeCreateGroupModal();
