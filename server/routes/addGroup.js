@@ -23,9 +23,9 @@ router.post('/api/auth/addGroup', (req, res) => { // Updated route definition
 
 // Endpoint to fetch all group names
 router.get('/api/auth/addGroup', (req, res) => {
-  const groupNames = JSON.parse(fs.readFileSync('./data/groups.json'));
+  const groups = JSON.parse(fs.readFileSync('./data/groups.json'));
+  const groupNames = groups.map(group => group.groupName);
   res.json(groupNames);
 });
-
 
 module.exports = router;

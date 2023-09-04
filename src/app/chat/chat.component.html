@@ -1,61 +1,70 @@
 <section class="gradient-custom">
     <div class="container py-5">
-
         <div class="row">
-
             <div class="col-md-6 col-lg-5 col-xl-5 mb-4 mb-md-0">
-
                 <h5 class="font-weight-bold mb-3 text-center text-white">Groups</h5>
-
                 <div class="card mask-custom">
                     <div class="card-body">
-
                         <ul class="list-unstyled mb-0">
                             <div id="chatGroups">
                                 <!-- List of chat groups will be displayed here -->
                             </div>
-                            
-                        <div id="createGroupContainer" *ngIf="isAllowedToCreateGroup">
-                            <button (click)="openCreateGroupModal()">Create Group</button>
-                        </div>
+
+                            <div id="createGroupContainer" *ngIf="isAllowedToCreateGroup">
+                                <button (click)="openCreateGroupModal()">Create Group</button>
+                            </div>
+
                             <li class="p-2 border-bottom"
                                 style="border-bottom: 1px solid rgba(255,255,255,.3) !important;">
                                 <a href="#!" class="d-flex justify-content-between link-light">
-                                    
-                                    <div class="d-flex flex-row"> 
+                                    <div class="d-flex flex-row">
                                         <div class="pt-1">
                                             <ul>
                                                 <li *ngFor="let groupName of groupNames">
                                                     {{ groupName }}
+                                                    <button (click)="registerInterest(groupName)">Register
+                                                        Interest</button>
                                                 </li>
                                             </ul>
-
                                         </div>
                                     </div>
-                                    
                                 </a>
                             </li>
-                            
                         </ul>
-
                     </div>
                 </div>
-
             </div>
+        </div>
 
-<!-- Modal for creating a group -->
-<div id="createGroupModal" *ngIf="isModalOpen">
-    <div class="modal-content">
-        <h2>Create Group</h2>
-        <form [formGroup]="createGroupForm">
-            <label for="groupName">Group Name:</label>
-            <input type="text" id="groupName" formControlName="groupName" required>
+        <!-- Button to register interest (only visible to normal users) -->
+        <ng-container *ngIf="selectedGroupName as groupName">
+            <button *ngIf="!isAllowedToCreateGroup" (click)="registerInterest(groupName)">Register Interest</button>
+        </ng-container>
 
-            <label for="description">Description:</label>
-            <textarea id="description" formControlName="description"></textarea>
+        <!-- List of pending interests (only visible to Super and Group roles) -->
+        <div *ngIf="isAllowedToCreateGroup">
+            <h2>Pending Interests</h2>
+            <ul>
+                <li *ngFor="let interest of pendingInterests">
+                    {{ interest.userName }} wants to join {{ interest.groupName }}
+                    <button (click)="confirmInterest(interest.userId, interest.groupName)">Confirm</button>
+                </li>
+            </ul>
+        </div>
 
-            <button type="button" (click)="closeCreateGroupModal()">Cancel</button>
-            <button type="button" (click)="createGroup()">Create</button>
-        </form>
+        <!-- The Modal -->
+        <div *ngIf="isModalOpen" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <span class="close" (click)="closeCreateGroupModal()">&times;</span>
+                <h2>Create Group</h2>
+                <form [formGroup]="createGroupForm">
+                    <label for="groupName">Group Name:</label>
+                    <input type="text" id="groupName" formControlName="groupName" required>
+                    <button type="button" (click)="closeCreateGroupModal()">Cancel</button>
+                    <button type="button" (click)="createGroup()">Create</button>
+                </form>
+            </div>
+        </div>
     </div>
-</div>
+</section>

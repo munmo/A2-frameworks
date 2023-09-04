@@ -10,42 +10,39 @@ const BACKEND_URL = 'http://localhost:3000';
   styleUrls: ['./chat.component.css'],
 })
 export class ChatComponent implements OnInit {
-  isModalOpen = false;
+  public groupNames: string[] = [];
+  public isAllowedToCreateGroup: boolean = false; // Initially set to false
+  public isModalOpen: boolean = false;
+  public pendingInterests: any[] = [];
+  public selectedGroupName: string | null = null; // Changed from selectedGroupId
 
   createGroupForm: FormGroup = this.fb.group({
     groupName: [''],
     description: [''],
   });
 
-  isAllowedToCreateGroup: boolean = false; // Updated to a boolean
-  groupNames: string[] = [];
-
   constructor(private http: HttpClient, private fb: FormBuilder) {}
 
   ngOnInit(): void {
-    
-    // Retrieve user roles from localStorage
-    const userRoles = JSON.parse(localStorage.getItem('roles') || '[]');
+    this.loadExistingGroups();
+    this.loadPendingInterests();
 
-    // Check if the user has "Super" or "Group" role
+    const userRoles = JSON.parse(localStorage.getItem('roles') || '[]');
     if (userRoles.includes('Super') || userRoles.includes('Group')) {
       this.isAllowedToCreateGroup = true;
     }
+  }
 
-//     this.loadExistingGroups();
-// }
-
-// loadExistingGroups(): void {
-//   this.http.get<string[]>(BACKEND_URL + '/api/auth/addGroup')
-//     .subscribe({
-//       next: (data) => {
-//         this.groupNames = data;
-//       },
-//       error: (error) => {
-//         console.error('Error fetching groups:', error);
-//       }
-//     });
-
+  loadExistingGroups(): void {
+    this.http.get<string[]>(BACKEND_URL + '/api/auth/addGroup')
+      .subscribe({
+        next: (data) => {
+          this.groupNames = data;
+        },
+        error: (error) => {
+          console.error('Error fetching groups:', error);
+        }
+      });
   }
 
   openCreateGroupModal(): void {
@@ -61,27 +58,62 @@ export class ChatComponent implements OnInit {
 
     if (groupNameControl) {
       const groupName = groupNameControl.value;
-
-console.log("Group Name:", groupName); //check
-
-
       if (groupName) {
-        this.http
-          .post<string[]>(BACKEND_URL + '/api/auth/addGroup', { groupName })
+        this.http.post<string[]>(BACKEND_URL + '/api/auth/addGroup', { groupName })
           .subscribe({
             next: (data) => {
               this.groupNames = data;
               groupNameControl.setValue('');
             },
             error: (error) => {
-              console.error('Error creating group:', error); // ERROR
+              console.error('Error creating group:', error);
             },
           });
-      } else {
-        console.log('Group name cannot be empty.');
       }
-    } else {
-      console.log('Group name control not found.');
     }
   }
+
+  registerInterest(groupName: string): void {
+    // Changed from groupId to groupName
+    this.http.post(BACKEND_URL + '/api/auth/registerInterest', { groupName })
+      .subscribe({
+        next: (data) => {
+          console.log('Interest registered:', data);
+        },
+        error: (error) => {
+          console.error('Error:', error);
+        },
+      });
+  }
+
+  loadPendingInterests(): void {
+    this.http.get<any[]>(BACKEND_URL + '/api/auth/pendingInterests')
+      .subscribe({
+        next: (data) => {
+          this.pendingInterests = data;
+        },
+        error: (error) => {
+          console.error('Error fetching pending interests:', error);
+        },
+      });
+  }
+
+    // Confirm interest
+  confirmInterest(userId: string, groupName: string): void { // added groupName parameter
+    if (groupName !== null) {
+      this.http.post(BACKEND_URL + '/api/auth/confirmInterest', { userId, groupName })
+        .subscribe({
+          next: (data) => {
+            console.log('Interest confirmed:', data);
+            this.loadPendingInterests(); // Refresh list
+          },
+          error: (error) => {
+            console.error('Error:', error);
+          },
+        });
+    } else {
+      console.log("groupName is null. Cannot proceed.");
+    }
+  }
+
 }

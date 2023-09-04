@@ -11,9 +11,8 @@ export class AccountComponent implements OnInit {
 
 
   username = localStorage.getItem('username') || "";
-  // birthdate = localStorage.getItem('birthdate') || "";
-  // age = Number(localStorage.getItem('age')) || 0;
   email = localStorage.getItem('email') || ""; 
+  role = localStorage.getItem('roles') || ""; 
   valid = Boolean(localStorage.getItem('valid')) || false;
 
   ngOnInit(){
