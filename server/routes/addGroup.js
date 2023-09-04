@@ -5,7 +5,7 @@ const router = express.Router();
 const fs = require('fs');
 
 // Endpoint to add a new group name
-router.post('/api/auth/addGroup', (req, res) => { // Updated route definition
+router.get('/api/auth/addGroup', (req, res) => { // Updated route definition
   console.log('addGroup endpoint hit'); //test
   const groupName = req.body.groupName;
 
