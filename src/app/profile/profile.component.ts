@@ -14,8 +14,6 @@ export class ProfileComponent implements OnInit{
   birthObj:string = "";
 
   username = localStorage.getItem('username') || "";
-  birthdate = localStorage.getItem('birthdate') || "";
-  age = Number(localStorage.getItem('age')) || 0;
   email = localStorage.getItem('email') || ""; 
   valid = Boolean(localStorage.getItem('valid')) || false;
 
@@ -31,21 +29,13 @@ export class ProfileComponent implements OnInit{
       this.router.navigate(['/login'], { replaceUrl: true });
     }
 
-    if(this.birthdate != "")
-    {
-      const birthTime = this.birthdate.split('/');
-      const newDate = `${birthTime[2]}-${birthTime[1]}-${birthTime[0]}`;
-      this.birthObj = newDate;
-    }
+  
   }
 
   saveDetails()
   {
-    const birthTime = this.birthObj.split('T')[0].split('-');
-    this.birthdate = `${birthTime[2]}/${birthTime[1]}/${birthTime[0]}`;
+  
     localStorage.setItem('username', this.username);
-    localStorage.setItem('birthdate', this.birthdate);
-    localStorage.setItem('age', this.age.toString());
     localStorage.setItem('email', this.email);
     this.router.navigate(['/account'], { replaceUrl: true });
   }

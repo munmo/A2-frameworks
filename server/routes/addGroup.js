@@ -1,31 +1,31 @@
+console.log("This is addGroup.js"); //test
+
 const express = require('express');
 const router = express.Router();
 const fs = require('fs');
-const path = require('path');
 
-// Path to the users.json file
-const usersDataPath = path.join(__dirname, '..', 'data', 'users.json');
+// Endpoint to add a new group name
+router.post('/api/auth/addGroup', (req, res) => { // Updated route definition
+  console.log('addGroup endpoint hit'); //test
+  const groupName = req.body.groupName;
 
-router.post('/addGroup', (req, res) => {
-  // Role validation logic
-  
-  const authenticatedUser = req.user;
-  
-  fs.readFile(usersDataPath, 'utf8', (err, data) => {
-    if (err) {
-      return res.status(500).json({ message: 'Error reading user data' });
-    }
+  // Read the existing group names from groups.json
+  const existingGroups = JSON.parse(fs.readFileSync('./data/groups.json'));
 
-    const users = JSON.parse(data);
-    const user = users.find(userData => userData.username === authenticatedUser);
+  // Add the new group name
+  existingGroups.push(groupName);
 
-    if (user && (user.roles.includes('super') || user.roles.includes('group'))) {
-      // Implement group creation logic here
-      res.json({ message: 'Group created successfully' });
-    } else {
-      res.status(403).json({ message: 'You do not have permission to create a group.' });
-    }
-  });
+  // Save the updated group names back to groups.json
+  fs.writeFileSync('./data/groups.json', JSON.stringify(existingGroups));
+
+  res.json(existingGroups);
 });
+
+// Endpoint to fetch all group names
+router.get('/api/auth/addGroup', (req, res) => {
+  const groupNames = JSON.parse(fs.readFileSync('./data/groups.json'));
+  res.json(groupNames);
+});
+
 
 module.exports = router;

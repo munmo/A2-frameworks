@@ -19,8 +19,8 @@ const BACKEND_URL = 'http://localhost:3000';
 })
 export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
-  userpwd: Userpwd = { email: '', password: ''}; 
-  userobj: Userobj = { username: '', email: '', valid: false, roles:[''] };
+  userpwd: Userpwd = { username:'', email: '', password: ''}; 
+  userobj: Userobj = { username: '', email: '', valid: false, roles: [] };
 
   constructor(
     private router: Router,
@@ -46,30 +46,33 @@ export class RegisterComponent implements OnInit {
     const data = this.registerForm.value;
 
     this.userpwd.email = data.email;
-    this.userpwd.password = data.pwd; // Use 'pwd' as the property name
+    this.userpwd.password = data.pwd;
+    this.userpwd.username = data.username;
     this.userobj.email = data.email;
     this.userobj.username = data.username;
+    this.userobj.roles = data.roles;
 
     this.httpClient.post(BACKEND_URL + '/api/auth', this.userpwd, httpOptions)
-      .subscribe({
-        next: (response: any) => {
-          if (response.ok) {
-            console.log("Response from backend:", response); //test
-                console.log("Sending registration data:", data);
-            alert('Registration successful!');
-            // Store user email in local storage
-            localStorage.setItem('userEmail', this.userobj.email);
-            localStorage.setItem('username', this.userobj.username);
-            console.log("Navigating to login page..."); //test
-            this.router.navigate(['/login']);
-          } else {
-            alert('Registration failed: ' + response.error);
-          }
-        },
-        error: (error) => {
-          console.error('Error during registration:', error);
-          alert('Registration failed: An error occurred. Please try again.');
-        }
-      });
-  }
-}
+  .subscribe({
+    next: (response: any) => {
+      if (response.ok) {
+        console.log("Response from backend:", response); //test
+        console.log("Sending registration data:", data); //test
+        alert('Registration successful!');
+        
+        // Store user details in local storage
+        localStorage.setItem('userEmail', this.userobj.email);
+        localStorage.setItem('username', this.userobj.username);
+        localStorage.setItem('roles', JSON.stringify(this.userobj.roles)); // Convert roles to a string
+        
+        console.log("Navigating to login page..."); //test
+        this.router.navigate(['/login']);
+      } else {
+        alert('Registration failed: ' + response.error);
+      }
+    },
+    error: (error) => {
+      console.error('Error during registration:', error);
+      alert('Registration failed: An error occurred. Please try again.');
+    }
+  });}}

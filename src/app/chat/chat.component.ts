@@ -1,62 +1,51 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import {Userpwd} from "../userpwd";
-import {Userobj} from "../userobj";
-
 
 const BACKEND_URL = 'http://localhost:3000';
 
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.css']
+  styleUrls: ['./chat.component.css'],
 })
 export class ChatComponent implements OnInit {
-  email = '';
-  pwd = '';
-  userpwd: Userpwd = { email: this.email, password: this.pwd };
-  userobj: Userobj = { username: '', email: this.userpwd.email, valid: false, roles: [''] };
-
   isModalOpen = false;
 
-  newGroupData: {
-    groupName: string;
-    description: string;
-    users: string[];
-    newUser: string;
-  } = {
-    groupName: '',
-    description: '',
-    users: [],
-    newUser: ''
-  };
+  createGroupForm: FormGroup = this.fb.group({
+    groupName: [''],
+    description: [''],
+  });
 
-  createGroupForm: FormGroup = new FormGroup({});
-  newUserControl: FormControl = new FormControl('');
-  isAllowedToCreateGroup: any;
+  isAllowedToCreateGroup: boolean = false; // Updated to a boolean
+  groupNames: string[] = [];
 
   constructor(private http: HttpClient, private fb: FormBuilder) {}
 
   ngOnInit(): void {
-  this.createGroupForm = this.fb.group({
-    groupName: [''],
-    description: ['']
-  });
+    
+    // Retrieve user roles from localStorage
+    const userRoles = JSON.parse(localStorage.getItem('roles') || '[]');
 
-  this.isAllowedToCreateGroup = this.fetchUserRoles(); // Call the method and assign the result
-}
+    // Check if the user has "Super" or "Group" role
+    if (userRoles.includes('Super') || userRoles.includes('Group')) {
+      this.isAllowedToCreateGroup = true;
+    }
 
-  fetchUserRoles(): Observable<boolean> {
-    return this.http.get<any>(BACKEND_URL + '/api/auth/users').pipe(
-      map(user => user.roles.includes('Super') || user.roles.includes('Group')),
-      catchError(error => {
-        console.error('Error fetching user data:', error);//ERROR HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        return of(false);
-      })
-    );
+//     this.loadExistingGroups();
+// }
+
+// loadExistingGroups(): void {
+//   this.http.get<string[]>(BACKEND_URL + '/api/auth/addGroup')
+//     .subscribe({
+//       next: (data) => {
+//         this.groupNames = data;
+//       },
+//       error: (error) => {
+//         console.error('Error fetching groups:', error);
+//       }
+//     });
+
   }
 
   openCreateGroupModal(): void {
@@ -64,36 +53,35 @@ export class ChatComponent implements OnInit {
   }
 
   closeCreateGroupModal(): void {
-    this.newGroupData = {
-      groupName: '',
-      description: '',
-      users: [],
-      newUser: ''
-    };
-    this.createGroupForm.reset();
     this.isModalOpen = false;
   }
 
-  addUserToGroup(): void {
-    this.newGroupData.users.push(this.newGroupData.newUser);
-    this.newGroupData.newUser = '';
-  }
   createGroup(): void {
-    if (this.isAllowedToCreateGroup) {
-      const groupData = this.createGroupForm.value;
-      groupData.users = this.newGroupData.users;
+    const groupNameControl = this.createGroupForm.get('groupName');
 
-      this.http.post<any>(BACKEND_URL + '/api/auth/addGroup', groupData).subscribe(
-        response => {
-          console.log('Group created successfully:', response);
-          this.closeCreateGroupModal();
-        },
-        error => {
-          console.error('Error creating group:', error);
-        }
-      );
+    if (groupNameControl) {
+      const groupName = groupNameControl.value;
+
+console.log("Group Name:", groupName); //check
+
+
+      if (groupName) {
+        this.http
+          .post<string[]>(BACKEND_URL + '/api/auth/addGroup', { groupName })
+          .subscribe({
+            next: (data) => {
+              this.groupNames = data;
+              groupNameControl.setValue('');
+            },
+            error: (error) => {
+              console.error('Error creating group:', error); // ERROR
+            },
+          });
+      } else {
+        console.log('Group name cannot be empty.');
+      }
     } else {
-      console.log('You do not have permission to create a group.');
+      console.log('Group name control not found.');
     }
   }
 }
