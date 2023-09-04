@@ -1,6 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+
+
+import { HttpClient, HttpHeaders } from '@angular/common/http'; //changed by kaile
+
+const httpOptions =
+{
+  headers: new HttpHeaders({ 'Content-Type' : 'application/json'})
+};
 
 const BACKEND_URL = 'http://localhost:3000';
 
@@ -34,7 +41,7 @@ export class ChatComponent implements OnInit {
   }
 
   loadExistingGroups(): void {
-    this.http.get<string[]>(BACKEND_URL + '/api/auth/addGroup')
+    this.http.get<string[]>(BACKEND_URL + '/api/auth/getGroups',httpOptions) // changed by Kaile
       .subscribe({
         next: (data) => {
           this.groupNames = data;
@@ -59,7 +66,7 @@ export class ChatComponent implements OnInit {
     if (groupNameControl) {
       const groupName = groupNameControl.value;
       if (groupName) {
-        this.http.post<string[]>(BACKEND_URL + '/api/auth/addGroup', { groupName })
+        this.http.post<string[]>(BACKEND_URL + '/api/auth/addGroup',  { "groupName": groupName, "channels": [] }, httpOptions)
           .subscribe({
             next: (data) => {
               this.groupNames = data;
