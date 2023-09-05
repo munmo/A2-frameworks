@@ -12,7 +12,18 @@ module.exports = async function (req, res) {
         const data = await fs.readFile('./data/users.json', 'utf8');
         const usersData = JSON.parse(data);
 
-        if (usersData.users.some(user => user.email === newUser.email)) {
+        let isUsernameExists = usersData.users.some(user => user.username === newUser.username);
+        let isEmailExists = usersData.users.some(user => user.email === newUser.email);
+
+        if (isUsernameExists && isEmailExists) {
+            return res.send({ ok: false, error: 'Both email and username are already registered' });
+        }
+
+        if (isUsernameExists) {
+            return res.send({ ok: false, error: 'Username already registered' });
+        }
+
+        if (isEmailExists) {
             return res.send({ ok: false, error: 'Email already registered' });
         }
 

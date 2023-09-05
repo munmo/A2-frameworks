@@ -19,13 +19,15 @@
                                 <a href="#!" class="d-flex justify-content-between link-light">
                                     <div class="d-flex flex-row">
                                         <div class="pt-1">
-                                            <ul>
-                                                <li *ngFor="let groupName of groupNames">
-                                                    {{ groupName }}
-                                                    <button (click)="registerInterest(groupName)">Register
-                                                        Interest</button>
-                                                </li>
-                                            </ul>
+                                        <ul>
+                                            <li *ngFor="let groupName of groupNames">
+                                                {{ groupName }}
+                                        
+                                                <button type="button" *ngIf="!isAllowedToCreateGroup" (click)="registerInterest($event, groupName)">Register
+                                                    Interest</button>
+
+                                            </li>
+                                        </ul>
                                         </div>
                                     </div>
                                 </a>
@@ -36,9 +38,10 @@
             </div>
         </div>
 
-        <!-- Button to register interest (only visible to normal users) -->
+        <!-- Button to register interest (only visible to normal users?) -->
         <ng-container *ngIf="selectedGroupName as groupName">
-            <button *ngIf="!isAllowedToCreateGroup" (click)="registerInterest(groupName)">Register Interest</button>
+        <button type="button" *ngIf="!isAllowedToCreateGroup" (click)="registerInterest($event, groupName)">Register Interest</button>
+
         </ng-container>
 
         <!-- List of pending interests (only visible to Super and Group roles) -->
@@ -46,9 +49,10 @@
             <h2>Pending Interests</h2>
             <ul>
                 <li *ngFor="let interest of pendingInterests">
-                    {{ interest.userName }} wants to join {{ interest.groupName }}
-                    <button (click)="confirmInterest(interest.userId, interest.groupName)">Confirm</button>
+                    {{ interest.username }} wants to join {{ interest.groupName }}
+                    <button (click)="confirmInterest(interest.username, interest.groupName)">Confirm</button>
                 </li>
+
             </ul>
         </div>
 

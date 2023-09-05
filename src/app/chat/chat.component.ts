@@ -61,66 +61,76 @@ export class ChatComponent implements OnInit {
   }
 
   createGroup(): void {
-    const groupNameControl = this.createGroupForm.get('groupName');
+  const groupNameControl = this.createGroupForm.get('groupName');
 
-    if (groupNameControl) {
-      const groupName = groupNameControl.value;
-      if (groupName) {
-        this.http.post<string[]>(BACKEND_URL + '/api/auth/addGroup',  { "groupName": groupName, "channels": [] }, httpOptions)
-          .subscribe({
-            next: (data) => {
-              this.groupNames = data;
-              groupNameControl.setValue('');
-            },
-            error: (error) => {
-              console.error('Error creating group:', error);
-            },
-          });
-      }
+  if (groupNameControl) {
+    const groupName = groupNameControl.value;
+    if (groupName) {
+      this.http.post<any[]>(BACKEND_URL + '/api/auth/addGroup',  { "groupName": groupName, "channels": [] }, httpOptions)
+        .subscribe({
+          next: (data) => {
+            // Ensuring we only take the groupNames from the data
+            this.groupNames = data.map(group => group.groupName);
+            groupNameControl.setValue('');
+          },
+          error: (error) => {
+            console.error('Error creating group:', error);
+          },
+        });
     }
   }
+}
 
-  registerInterest(groupName: string): void {
-    // Changed from groupId to groupName
-    this.http.post(BACKEND_URL + '/api/auth/registerInterest', { groupName })
+//register interest in a group - event: to prevent page navigating to account automatically
+  registerInterest(event: Event, groupName: string): void {
+    event.preventDefault();
+
+     const username = localStorage.getItem('username');
+
+    if (!username) {
+      console.error('No username found');
+      return;
+    }
+
+    console.log("registerInterest called with:", groupName);
+
+    this.http.post(`${BACKEND_URL}/api/auth/registerInterest`, { username, groupName }, httpOptions)
       .subscribe({
         next: (data) => {
           console.log('Interest registered:', data);
         },
         error: (error) => {
           console.error('Error:', error);
-        },
+        }
       });
   }
 
+
+// Pending requests - only super and group user can see
   loadPendingInterests(): void {
-    this.http.get<any[]>(BACKEND_URL + '/api/auth/pendingInterests')
-      .subscribe({
-        next: (data) => {
-          this.pendingInterests = data;
-        },
-        error: (error) => {
-          console.error('Error fetching pending interests:', error);
-        },
-      });
-  }
-
-    // Confirm interest
-  confirmInterest(userId: string, groupName: string): void { // added groupName parameter
-    if (groupName !== null) {
-      this.http.post(BACKEND_URL + '/api/auth/confirmInterest', { userId, groupName })
+    this.http.get<any[]>(BACKEND_URL + '/api/auth/pendingInterest')
         .subscribe({
-          next: (data) => {
-            console.log('Interest confirmed:', data);
-            this.loadPendingInterests(); // Refresh list
-          },
-          error: (error) => {
-            console.error('Error:', error);
-          },
+            next: (data) => {
+                this.pendingInterests = data;
+            },
+            error: (error) => {
+                console.error('Error fetching pending interests:', error);
+            },
         });
-    } else {
-      console.log("groupName is null. Cannot proceed.");
-    }
-  }
+}
+
+// confirm
+    confirmInterest(username: string, groupName: string): void {
+  this.http.post(`${BACKEND_URL}/api/auth/confirmInterest`, { username, groupName }, httpOptions)
+    .subscribe({
+      next: (data) => {
+        console.log('Interest confirmed:', data);
+        this.loadPendingInterests(); // Refresh list
+      },
+      error: (error) => {
+        console.error('Error:', error);
+      },
+    });
+}
 
 }
