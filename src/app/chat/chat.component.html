@@ -21,13 +21,14 @@
                                         <div class="pt-1">
                                         <ul>
                                             <li *ngFor="let groupName of groupNames">
-                                                {{ groupName }}
-                                        
+                                                <span (click)="onGroupNameClick($event, groupName)">{{ groupName }}</span>
                                                 <button type="button" *ngIf="!isAllowedToCreateGroup" (click)="registerInterest($event, groupName)">Register
                                                     Interest</button>
-
                                             </li>
+                                            
+
                                         </ul>
+
                                         </div>
                                     </div>
                                 </a>
@@ -43,7 +44,10 @@
         <button type="button" *ngIf="!isAllowedToCreateGroup" (click)="registerInterest($event, groupName)">Register Interest</button>
 
         </ng-container>
-
+<ul>
+    <li *ngFor="let channel of channelsForSelectedGroup">{{ channel }}</li>
+</ul>
+    
         <!-- List of pending interests (only visible to Super and Group roles) -->
         <div *ngIf="isAllowedToCreateGroup">
             <h2>Pending Interests</h2>

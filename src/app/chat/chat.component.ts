@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-
-
-import { HttpClient, HttpHeaders } from '@angular/common/http'; //changed by kaile
+import { HttpClient, HttpHeaders } from '@angular/common/http'; 
 
 const httpOptions =
 {
@@ -21,11 +19,11 @@ export class ChatComponent implements OnInit {
   public isAllowedToCreateGroup: boolean = false; // Initially set to false
   public isModalOpen: boolean = false;
   public pendingInterests: any[] = [];
-  public selectedGroupName: string | null = null; // Changed from selectedGroupId
+  public selectedGroupName: string | null = null; 
+  public channelsForSelectedGroup: string[] = [];
 
   createGroupForm: FormGroup = this.fb.group({
-    groupName: [''],
-    description: [''],
+    groupName: ['']
   });
 
   constructor(private http: HttpClient, private fb: FormBuilder) {}
@@ -41,7 +39,7 @@ export class ChatComponent implements OnInit {
   }
 
   loadExistingGroups(): void {
-    this.http.get<string[]>(BACKEND_URL + '/api/auth/getGroups',httpOptions) // changed by Kaile
+    this.http.get<string[]>(BACKEND_URL + '/api/auth/getGroups',httpOptions) 
       .subscribe({
         next: (data) => {
           this.groupNames = data;
@@ -97,6 +95,7 @@ export class ChatComponent implements OnInit {
     this.http.post(`${BACKEND_URL}/api/auth/registerInterest`, { username, groupName }, httpOptions)
       .subscribe({
         next: (data) => {
+          alert("Interest registered!");
           console.log('Interest registered:', data);
         },
         error: (error) => {
@@ -132,5 +131,31 @@ export class ChatComponent implements OnInit {
       },
     });
 }
-
+//stops navigating to app page when clicked
+onGroupNameClick(event: Event, groupName: string): void {
+    event.preventDefault();
+    console.log("Group name clicked:", groupName, );
+    this.selectGroup(groupName);
 }
+
+selectGroup(groupName: string): void {
+    const username = localStorage.getItem('username');
+    if (!username) {
+      console.error("Username not found in local storage");
+      return;
+    }
+    console.log('Requesting channels for:', { groupName, username });
+
+    this.http.post<string[]>(`${BACKEND_URL}/api/auth/getChannels`, { groupName, username }, httpOptions)
+  .subscribe({
+    next: (channels) => {
+      console.log('Received channels:', channels);  // Step 4
+      this.channelsForSelectedGroup = channels;
+    },
+    error: (error) => {
+      console.error('Error fetching channels:', error);
+      if (error.status === 403) {  
+        alert("You need to register to this group!");
+      }
+    }
+  });}}

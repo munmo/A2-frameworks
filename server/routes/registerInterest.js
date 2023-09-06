@@ -4,10 +4,6 @@ module.exports = function(req, res) {
   const username = req.body.username;
   const groupName = req.body.groupName;
 
-  if (!username || !groupName) {
-    return res.status(400).json({ message: "Username or groupName missing." });
-  }
-
   let pendingInterests;
   
   try {

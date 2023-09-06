@@ -20,7 +20,7 @@ const BACKEND_URL = 'http://localhost:3000';
 export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   userpwd: Userpwd = { username:'', email: '', password: ''}; 
-  userobj: Userobj = { username: '', email: '', valid: false, roles: [] };
+  userobj: Userobj = { username: '', email: '', valid: false, roles: [], group: [] };
 
   constructor(
     private router: Router,

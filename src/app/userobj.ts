@@ -3,4 +3,5 @@ export interface Userobj {
     email: string;
     valid: boolean;
     roles: string[];
+    group: string[];
   }
