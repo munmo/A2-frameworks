@@ -48,7 +48,7 @@ Functions within this module, such as writing to the `pendingInterest.json` file
 Global variables like `BACKEND_URL` are used to store information that is accessed throughout the application. For example, the chat component on the client side, `chat.component.ts`, interacts with this architecture by making HTTP requests, such as fetching a username and posting new interests to join a group. It does this by using Angular's HttpClient to communicate with the server's endpoints.
 
 ## Routes:
-
+--------------------------|----------------------------------------------------------------------------------|
 Description | This function validates user login by matching email and password.
 Route | /api/auth/login
 Method | POST
