@@ -48,11 +48,12 @@ Functions within this module, such as writing to the `pendingInterest.json` file
 Global variables like `BACKEND_URL` are used to store information that is accessed throughout the application. For example, the chat component on the client side, `chat.component.ts`, interacts with this architecture by making HTTP requests, such as fetching a username and posting new interests to join a group. It does this by using Angular's HttpClient to communicate with the server's endpoints.
 
 ## Routes:
---------------------------|----------------------------------------------------------------------------------|
-Description | This function validates user login by matching email and password.
-Route | /api/auth/login
-Method | POST
-Parameters | req.body.email, req.body.password
-Return value | JSON object that indicates whether login is successful and includes user data if it is.
-Technical Explanation | The function reads users.json to find a matching email and password. It also sets the valid property to true for the user.
-Client-Server interaction | Upon successful login, the server-side users.json remains unchanged but returns validation status. The client updates its state and redirect the user to an account page.
+| Aspect | Description |
+| -------------------------- | ---------------------------------------------------------------------------------- |
+| Description | This function validates user login by matching email and password. |
+| Route | /api/auth/login |
+| Method | POST |
+| Parameters | req.body.email, req.body.password |
+| Return value | JSON object that indicates whether login is successful and includes user data if it is. |
+| Technical Explanation | The function reads users.json to find a matching email and password. It also sets the valid property to true for the user. |
+| Client-Server interaction | Upon successful login, the server-side users.json remains unchanged but returns validation status. The client updates its state and redirect the user to an account page. |
