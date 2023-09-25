@@ -1,1 +1,4 @@
-{"users":[{"username":"Super","email":"super@gmail.com","pwd":"123","roles":["Super"],"valid":true},{"username":"abc","email":"abc@gmail.com","pwd":"123","roles":["Group"],"group":[],"valid":false},{"username":"qwe","email":"qwe@gmail.com","pwd":"123","group":["Griffith Tennis club","Griffith IT","Griffith Tennis club"],"valid":false},{"username":"iii","email":"iii@gmail.com","pwd":"123","valid":false}]}
+[{"username":"Super","email":"super@gmail.com","pwd":"123","roles":["Super"],"valid":true},
+{"username":"abc","email":"abc@gmail.com","pwd":"123","roles":["Group"],"group":[],"valid":false},
+{"username":"qwe","email":"qwe@gmail.com","pwd":"123","group":["Griffith Tennis club","Griffith IT"],"valid":false},
+{"username":"iii","email":"iii@gmail.com","pwd":"123","valid":false}]

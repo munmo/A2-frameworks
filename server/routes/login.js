@@ -1,30 +1,22 @@
-var fs = require('fs');
+module.exports = function(db, app) {
+    app.post('/api/login', async function(req, res) {
+        // Retrieve email and password from request body
+        const { email, password } = req.body;
+        if (!email || !password) return res.status(400).json({ ok: false, message: 'Email and password are required' });
 
-module.exports = function(req, res)
-{
-    var customer = {}; //Create a new customer object that can be sent back as a response
-    customer.email = req.body.email; //Assign the email object of customer to the email from response
-    customer.password = req.body.password; //Assign the password object of customer to the password from response
-
-    console.log(customer.password);
-
-    fs.readFile("./data/users.json", "utf8", function(err,data)
-    {
-        if(err) throw err;
-        let userArray = JSON.parse(data);
-        userArray = Object.values(userArray.users);
-        let i = userArray.findIndex(user => 
-            ((user.email == customer.email) && (user.pwd == customer.password)));
-        if(i == -1)
-        {
-            res.send({"ok": false});
+        // Access the users collection
+        const collection = db.collection('users');
+        try {
+            // Find a user that matches the email and password
+            const user = await collection.findOne({ email, pwd: password });
+            if (!user) return res.json({ ok: false });
+            
+            // Update user as valid and send a response
+            await collection.updateOne({ email }, { $set: { valid: true } });
+            res.json({ ok: true, userData: user });
+        } catch(err) {
+            console.error('Error:', err);
+            res.status(500).json({ ok: false, message: 'Internal Server Error' });
         }
-        else
-        {
-            userArray[i].valid = true;
-            res.send({
-                "ok": true,
-                "userData": userArray[i]});
-        }
-    })
+    });
 }

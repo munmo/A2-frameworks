@@ -19,11 +19,11 @@ export class ChatComponent implements OnInit {
   public isAllowedToCreateGroup: boolean = false; // Initially set to false
   public isModalOpen: boolean = false;
   public pendingInterests: any[] = [];
-  public selectedGroupName: string | null = null; 
+  public selectedGroup: string | null = null; 
   public channelsForSelectedGroup: string[] = [];
 
   createGroupForm: FormGroup = this.fb.group({
-    groupName: ['']
+    group: ['']
   });
 
   constructor(private http: HttpClient, private fb: FormBuilder) {}
@@ -39,7 +39,7 @@ export class ChatComponent implements OnInit {
   }
 
   loadExistingGroups(): void {
-    this.http.get<string[]>(BACKEND_URL + '/api/auth/getGroups',httpOptions) 
+    this.http.get<string[]>(BACKEND_URL + '/api/getGroups',httpOptions) 
       .subscribe({
         next: (data) => {
           this.groupNames = data;
@@ -58,29 +58,36 @@ export class ChatComponent implements OnInit {
     this.isModalOpen = false;
   }
 
-  createGroup(): void {
-  const groupNameControl = this.createGroupForm.get('groupName');
+  //create group
+ createGroup(): void {
+  const groupControl = this.createGroupForm.get('group');
 
-  if (groupNameControl) {
-    const groupName = groupNameControl.value;
-    if (groupName) {
-      this.http.post<any[]>(BACKEND_URL + '/api/auth/addGroup',  { "groupName": groupName, "channels": [] }, httpOptions)
+  if (groupControl) {
+    const group = groupControl.value;
+    if (group) {
+      this.http.post<any>(BACKEND_URL + '/api/addGroup', { "group": group, "channels": [] }, httpOptions)
         .subscribe({
           next: (data) => {
-            // Ensuring we only take the groupNames from the data
-            this.groupNames = data.map(group => group.groupName);
-            groupNameControl.setValue('');
+            console.log(data);
+            if (data && data.group) {
+              this.groupNames.push(data.group);
+              this.isModalOpen = false; // Close the modal
+            } else {
+              console.error('Unexpected response:', data);
+            }
+            // Now reload the list of groups to ensure it's up-to-date.
+            this.loadExistingGroups();
           },
           error: (error) => {
-            console.error('Error creating group:', error);
-          },
+            console.error('Error:', error);
+          }
         });
     }
   }
 }
 
 //register interest in a group - event: to prevent page navigating to account automatically
-  registerInterest(event: Event, groupName: string): void {
+  registerInterest(event: Event, group: string): void {
     event.preventDefault();
 
      const username = localStorage.getItem('username');
@@ -90,9 +97,9 @@ export class ChatComponent implements OnInit {
       return;
     }
 
-    console.log("registerInterest called with:", groupName);
+    console.log("registerInterest called with:", group);
 
-    this.http.post(`${BACKEND_URL}/api/auth/registerInterest`, { username, groupName }, httpOptions)
+    this.http.post(`${BACKEND_URL}/api/registerInterest`, { username, group }, httpOptions)
       .subscribe({
         next: (data) => {
           alert("Interest registered!");
@@ -107,7 +114,7 @@ export class ChatComponent implements OnInit {
 
 // Pending requests - only super and group user can see
   loadPendingInterests(): void {
-    this.http.get<any[]>(BACKEND_URL + '/api/auth/pendingInterest')
+    this.http.get<any[]>(BACKEND_URL + '/api/pendingInterest')
         .subscribe({
             next: (data) => {
                 this.pendingInterests = data;
@@ -119,8 +126,8 @@ export class ChatComponent implements OnInit {
 }
 
 // confirm
-    confirmInterest(username: string, groupName: string): void {
-  this.http.post(`${BACKEND_URL}/api/auth/confirmInterest`, { username, groupName }, httpOptions)
+    confirmInterest(username: string, group: string): void {
+  this.http.post(`${BACKEND_URL}/api/confirmInterest`, { username, group }, httpOptions)
     .subscribe({
       next: (data) => {
         console.log('Interest confirmed:', data);
@@ -132,30 +139,33 @@ export class ChatComponent implements OnInit {
     });
 }
 //stops navigating to app page when clicked
-onGroupNameClick(event: Event, groupName: string): void {
+onGroupNameClick(event: Event, group: string): void {
     event.preventDefault();
-    console.log("Group name clicked:", groupName, );
-    this.selectGroup(groupName);
+    console.log("Group name clicked:", group, );
+    this.selectGroup(group);
 }
 
-selectGroup(groupName: string): void {
-    const username = localStorage.getItem('username');
-    if (!username) {
-      console.error("Username not found in local storage");
-      return;
-    }
-    console.log('Requesting channels for:', { groupName, username });
+selectGroup(group: string): void {
+  const username = localStorage.getItem('username');
+  if (!username) {
+    console.error("Username not found in local storage");
+    return;
+  }
+  console.log('Requesting channels for:', { group, username });
 
-    this.http.post<string[]>(`${BACKEND_URL}/api/auth/getChannels`, { groupName, username }, httpOptions)
-  .subscribe({
-    next: (channels) => {
-      console.log('Received channels:', channels);  // Step 4
-      this.channelsForSelectedGroup = channels;
-    },
-    error: (error) => {
-      console.error('Error fetching channels:', error);
-      if (error.status === 403) {  
-        alert("You need to register to this group!");
+  this.http.post<string[]>(`${BACKEND_URL}/api/getChannels`, { group, username }, httpOptions)
+    .subscribe({
+      next: (channels) => {
+        console.log('Received channels:', channels);
+        this.channelsForSelectedGroup = channels;
+      },
+      error: (error) => {
+        console.error('Error fetching channels:', error);
+        if (error.status === 403) {
+          alert("You need to register to this group!");
+        }
       }
-    }
-  });}}
+    });
+}
+
+}

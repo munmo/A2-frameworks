@@ -36,7 +36,8 @@ export class LoginComponent implements OnInit {
   this.userpwd.email = this.email;
   this.userpwd.password = this.pwd;
 
-  this.httpClient.post(BACKEND_URL + '/api/auth/login', this.userpwd, httpOptions)
+  this.httpClient.post(BACKEND_URL + '/api/login', this.userpwd, httpOptions)
+
     .subscribe((data: any) => {
       if (data.ok) {
         const userData = data.userData;

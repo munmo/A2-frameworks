@@ -1,13 +1,12 @@
-// Endpoint to fetch all group names
-var fs = require('fs');
-
-module.exports = function(req, res) {
-
-    let groups = JSON.parse(fs.readFileSync('./data/groups.json'));
-    console.log(groups)
-
-    let groupNames = groups.map(group => group.groupName);
-    res.json(groupNames);
-
-
+module.exports = function(db, app) {
+    app.get('/api/getGroups', async function(req, res) {
+        try {
+            const groupsCollection = db.collection('groups');
+            const groups = await groupsCollection.find({}).toArray();
+            res.json(groups.map(group => group.group));
+        } catch(err) {
+            console.error('Error:', err);
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    });
 }

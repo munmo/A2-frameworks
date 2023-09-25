@@ -1,32 +1,28 @@
 const express = require('express');
 const router = express.Router();
-const fs = require('fs'); // Require the fs module
-const path = require('path');
 
-// Path to the users.json file
-const usersDataPath = __dirname + '../data/users.json';
+// This function assumes that you're passing the database connection from your main server file
+module.exports = function(db) {
+  router.get('/userData', async (req, res) => {
+    const authenticatedUser = req.user;
 
-router.get('/userData', (req, res) => {
-  const authenticatedUser = req.user;
+    try {
+      // Query MongoDB for the user's data
+      const usersCollection = db.collection('users');
+      const user = await usersCollection.findOne({ username: authenticatedUser });
 
-  // Read users' data from the JSON file
-  fs.readFile(usersDataPath, 'utf8', (err, data) => {
-    if (err) {
-      return res.status(500).json({ message: 'Error reading user data' });
-    }
-
-    const users = JSON.parse(data);
-    const user = users.find(userData => userData.username === authenticatedUser);
-
-    if (user) {
-      res.json({
-        roles: user.roles // Send user roles to the frontend
-    
-      });
-    } else {
-      res.status(404).json({ message: 'User not found' });
+      if (user) {
+        res.json({
+          roles: user.roles // Send user roles to the frontend
+        });
+      } else {
+        res.status(404).json({ message: 'User not found' });
+      }
+    } catch (err) {
+      console.error('Error fetching user data from MongoDB:', err);
+      res.status(500).json({ message: 'Error fetching user data' });
     }
   });
-});
 
-module.exports = router;
+  return router;
+};
