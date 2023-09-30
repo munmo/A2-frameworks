@@ -41,22 +41,40 @@
         </ng-container>
 
         <!-- List of channels from accepted group -->
-        <ul>
-            <li *ngFor="let channel of channelsForSelectedGroup">
-                <a [href]="channel">{{ channel }}</a>
-            </li>
+       <ul> 
+            <a *ngFor="let channel of channelsForSelectedGroup" (click)="selectChannel(channel)">{{ channel }}</a>
+
         </ul>
 
-        <!-- List of pending interests (only visible to Super and Group roles) -->
-        <div *ngIf="isAllowedToCreateGroup">
-            <h2>Pending Interests</h2>
-            <ul>
-                <li *ngFor="let interest of pendingInterests">
-                    {{ interest.username }} wants to join {{ interest.group }}
-                    <button (click)="confirmInterest(interest.username, interest.group)">Confirm</button>
-                </li>
-            </ul>
+        <!-- Chat -->
+        <ng-container *ngIf="selectedChannel">
+        <div class="portlet-body chat-widget" style="overflow-y: auto; width: auto; height: 100px;">
+            <div *ngFor="let m of messages[selectedChannel]" class="row">
+                <div class="col-lg-12">
+                    <div class="media">
+                        <div class="media-body">
+
+                            <p>{{ m }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
+
+        <div class="portlet-footer">
+            <form role="form">
+                <div class="form-group">
+                    <textarea class="form-control" placeholder="Enter message..." type="text" [(ngModel)]="messagecontent"
+                        name="messagecontent" id="messagecontent" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="button" button (click)="chat()" class="btn btn-default pull-right">Send</button>
+                    <div class="clearfix"></div>
+                </div>
+            </form>
+        </div> 
+        </ng-container>
 
         <!-- The Modal -->
         <div *ngIf="isModalOpen" class="modal">
@@ -74,3 +92,4 @@
         </div>
     </div>
 </section>
+

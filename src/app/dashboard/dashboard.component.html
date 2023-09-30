@@ -1,0 +1,10 @@
+<!-- List of pending interests (only visible to Super and Group roles) -->
+<div>
+    <h2>Pending Interests</h2>
+    <ul>
+        <li *ngFor="let interest of pendingInterests">
+            {{ interest.username }} wants to join {{ interest.group }}
+            <button (click)="confirmInterest(interest.username, interest.group)">Confirm</button>
+        </li>
+    </ul>
+</div>

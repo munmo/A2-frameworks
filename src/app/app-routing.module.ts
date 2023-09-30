@@ -6,6 +6,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { AppComponent } from './app.component';
 import { RegisterComponent } from './register/register.component';
 import { ChatComponent } from './chat/chat.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 const routes: Routes = [
   
   {path: 'home', component: AppComponent},
@@ -13,7 +14,8 @@ const routes: Routes = [
   {path: 'register', component: RegisterComponent},
   {path: 'account', component: AccountComponent},
   {path: 'profile', component: ProfileComponent},
-  {path: 'chat', component: ChatComponent},
+  { path: 'chat', component: ChatComponent },
+  {path: 'dashboard', component: DashboardComponent},
 ];
 
 @NgModule({

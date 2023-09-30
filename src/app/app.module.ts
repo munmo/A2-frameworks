@@ -11,6 +11,8 @@ import { ProfileComponent } from './profile/profile.component';
 import { RegisterComponent } from './register/register.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ChatComponent } from './chat/chat.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { SocketService } from './socket.service';
 
 @NgModule({
   declarations: [
@@ -19,7 +21,8 @@ import { ChatComponent } from './chat/chat.component';
     AccountComponent,
     ProfileComponent,
     RegisterComponent,
-    ChatComponent
+    ChatComponent,
+    DashboardComponent
   ],
   imports: [
     BrowserModule,
@@ -28,7 +31,7 @@ import { ChatComponent } from './chat/chat.component';
     HttpClientModule,
     ReactiveFormsModule,
   ],
-  providers: [],
+  providers: [SocketService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

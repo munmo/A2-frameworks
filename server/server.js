@@ -3,8 +3,37 @@ const app = express();
 const http = require('http').Server(app);
 const cors = require('cors');
 const { MongoClient, ObjectId } = require('mongodb');
+const socketIo = require('socket.io');
 
 const PORT = process.env.PORT || 3000;
+const io = require('socket.io')(http,{
+    cors:{
+     origin:"http://localhost:4200",
+        methods:["GET","POST"],
+    }
+});
+const sockets = require('./socket.js');
+sockets.connect(io, PORT);
+
+
+io.on('connection', (socket) => {
+    console.log('Client connected');
+    
+    // Handle chat-message event
+    socket.on('chat-message', (data) => {
+        console.log('Received message from client:', data);
+
+        // Broadcast to others
+        socket.broadcast.emit('new-message', data);
+
+        // If you also want to send it back to the sender
+        // socket.emit('new-message', data);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Client disconnected');
+    });
+});
 
 const uri = "mongodb://127.0.0.1:27017";
 const client = new MongoClient(uri);

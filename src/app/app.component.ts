@@ -28,24 +28,6 @@ export class AppComponent implements OnInit {
   
     this.valid = Boolean(localStorage.getItem('valid')) || false;
 
-    //OBSERVABLES 
-    // this.newValid$ = new Observable(subscriber => {
-    //   subscriber.next(this.valid);
-    //   subscriber.complete();
-    // }) 
-  
-    // this.newValid$.subscribe({
-    //   next(x) {
-    //     console.log("New Value: " + x);
-    //   },
-    //   error(err: any) {
-    //     console.log(err);
-    //   },
-    //   complete() {
-    //     console.log("valid variable changed");
-    //   },
-    // });
-
 
     if(this.valid == true)
     {
@@ -63,6 +45,23 @@ export class AppComponent implements OnInit {
   {
     return Boolean(localStorage.getItem('valid')) || false;
   }
+isAdmin(): boolean {
+    const roleStr = localStorage.getItem('roles');
+    if (!roleStr) {
+        return false;
+    }
+    
+    try {
+        const roles = JSON.parse(roleStr);
+        return roles.includes('Super') || roles.includes('Group');
+    } catch (error) {
+        console.error("Error parsing roles:", error);
+        return false;
+    }
+}
+
+
+
 
   logOut()
   {

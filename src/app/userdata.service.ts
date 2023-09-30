@@ -36,9 +36,6 @@ export class AuthService {
     return this.http.post<any>(`${BACKEND_URL}/api/addGroup`, { groupName }, httpOptions);
   }
 
-  // The other routes you mentioned (e.g., confirmInterest, pendingInterest, etc.)
-  // should similarly be turned into methods within this service.
-
   // Just an example for `registerInterest`:
   registerInterest(interestData: any): Observable<any> {
     return this.http.post<any>(`${BACKEND_URL}/api/registerInterest`, interestData, httpOptions);
