@@ -23,7 +23,7 @@ export class ChatComponent implements OnInit {
   public selectedGroup: string | null = null; 
   public channelsForSelectedGroup: string[] = [];
   public selectedChannel: string | null = null;
-
+  
   createGroupForm: FormGroup = this.fb.group({
     group: ['']
   });
@@ -39,20 +39,24 @@ export class ChatComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-  console.log("Component ngOnInit called");
-  this.loadExistingGroups();
-
-  const userRoles = JSON.parse(localStorage.getItem('roles') || '[]');
-  if (userRoles.includes('Super') || userRoles.includes('Group')) {
-    this.isAllowedToCreateGroup = true;
-  }
-
-    this.initIoConnection();
-    
-    this.socketService.initSocket();
-
-   
+    console.log("Component ngOnInit called");
+    this.initSocketConnection();  // Always initialize the socket regardless of the user role
+    this.loadExistingGroups();
+    this.determineUserPermissions();  // Check user's permissions after initializing the socket
 }
+
+private initSocketConnection(): void {
+    this.socketService.initSocket();
+    this.initIoConnection();
+}
+
+private determineUserPermissions(): void {
+    const userRoles = JSON.parse(localStorage.getItem('roles') || '[]');
+    if (userRoles.includes('Super') || userRoles.includes('Group')) {
+        this.isAllowedToCreateGroup = true;
+    }
+}
+
 
 
   loadExistingGroups(): void {
@@ -91,9 +95,9 @@ export class ChatComponent implements OnInit {
   confirmInterest(username: string, group: string): void {
     const httpOptions = {
       headers: {
-        // Your headers here, e.g., 'Content-Type': 'application/json'
+      
       }
-      // other options
+     
     };
 
     this.http.post(`${BACKEND_URL}/api/confirmInterest`, { username, group }, httpOptions)
@@ -180,11 +184,19 @@ chat() {
   if (this.messagecontent && this.selectedChannel) {
     console.log("Sending message:", this.messagecontent, "to channel:", this.selectedChannel);
     this.socketService.send({ message: this.messagecontent, channel: this.selectedChannel });
+
+    // Optimistically display the sent message
+    if (!this.messages[this.selectedChannel]) {
+      this.messages[this.selectedChannel] = [];
+    }
+    this.messages[this.selectedChannel].push(this.messagecontent);
+
     this.messagecontent = "";
   } else {
     console.log("No message or channel selected");
   }
 }
+
 
 //stops navigating to app page when clicked
 onGroupNameClick(event: Event, group: string): void {

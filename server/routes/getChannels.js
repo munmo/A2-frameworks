@@ -12,7 +12,8 @@ module.exports = function(db, app) {
             const user = await usersCollection.findOne({ username });
             if(!user) return res.status(404).json({ message: 'User not found' });
         
-            const hasAccess = user.roles?.includes("Super") || user.roles?.includes("Group") || user.groups?.includes(group);
+            const hasAccess = user.roles?.includes("Super") || user.roles?.includes("Group") || user.group?.includes(group);
+
             if (!hasAccess) return res.status(403).json({ message: 'You do not have permission to view these channels.' });
         
             const groupDoc = await groupsCollection.findOne({ group });

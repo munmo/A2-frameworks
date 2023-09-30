@@ -47,7 +47,7 @@ export class AppComponent implements OnInit {
   }
 isAdmin(): boolean {
     const roleStr = localStorage.getItem('roles');
-    if (!roleStr) {
+    if (!roleStr || roleStr === 'undefined') {
         return false;
     }
     
@@ -59,6 +59,7 @@ isAdmin(): boolean {
         return false;
     }
 }
+
 
 
 
