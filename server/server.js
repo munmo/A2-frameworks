@@ -2,8 +2,12 @@ const express = require('express');
 const app = express();
 const http = require('http').Server(app);
 const cors = require('cors');
+const path = require('path');
+var fs = require('fs');
 const { MongoClient, ObjectId } = require('mongodb');
 const socketIo = require('socket.io');
+const formidable = require('formidable');
+app.use(cors());
 
 const PORT = process.env.PORT || 3000;
 const io = require('socket.io')(http,{
@@ -13,7 +17,7 @@ const io = require('socket.io')(http,{
     }
 });
 const sockets = require('./socket.js');
-sockets.connect(io, PORT);
+// sockets.connect(io, PORT);
 
 
 io.on('connection', (socket) => {
@@ -40,6 +44,13 @@ const client = new MongoClient(uri);
 
 app.use(cors());
 app.use(express.json());
+// Serve your Angular app (adjust the path accordingly)
+app.use(express.static(__dirname + '/angular-dist'));
+// Serve images from the '/images' route
+app.use('/images', express.static(path.join(__dirname, '../server/userimages')));
+
+// Serve uploads from the '/uploads' route
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 async function main() {
     try {
@@ -48,11 +59,6 @@ async function main() {
 
         const dbName = "chat";
         const db = client.db(dbName);
-    
-        // Uncomment these lines if you need to drop these collections
-        // db.collection("users").drop();
-        // db.collection("pendingRequest").drop();
-        // db.collection("groups").drop();
     
         // Link routes to the main server
         require('./routes/addGroup')(db, app);
@@ -64,7 +70,8 @@ async function main() {
         require('./routes/confirmInterest')(db, app);
         require('./routes/pendingInterest')(db, app, ObjectId);
         require('./routes/getChannels')(db, app);
-
+        require('./routes/uploads.js')(app, formidable, fs, path);
+        
         http.listen(PORT, () => {
             console.log("Server listening on port: " + PORT);
         });

@@ -60,3 +60,16 @@
   text-decoration: none;
   cursor: pointer;
 }
+.portlet-body.chat-widget {
+  overflow-y: auto;
+  width: 300px;
+  height: 450px !important;
+  border: 1px solid rgba(255, 255, 255, 0.2); /* optional: adds a slight border around chat area */
+  padding: 10px; /* optional: adds some padding inside chat area */
+}
+.uploaded-image {
+  max-width: 300px; /* or whatever maximum width you want */
+  max-height: 300px; /* or whatever maximum height you want */
+  width: auto;
+  height: auto;
+}

@@ -13,6 +13,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ChatComponent } from './chat/chat.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SocketService } from './socket.service';
+import { ImguploadService } from './imgupload.service';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,7 @@ import { SocketService } from './socket.service';
     HttpClientModule,
     ReactiveFormsModule,
   ],
-  providers: [SocketService],
+  providers: [SocketService, ImguploadService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
