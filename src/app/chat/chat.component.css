@@ -1,75 +1,50 @@
+/* CSS for the layout */
 .gradient-custom {
-  /* fallback for old browsers */
-  background: #fccb90;
-
-  /* Chrome 10-25, Safari 5.1-6 */
-  background: -webkit-linear-gradient(
-    to bottom right,
-    rgba(252, 203, 144, 1),
-    rgba(213, 126, 235, 1)
-  );
-
-  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  background: linear-gradient(
-    to bottom right,
-    rgba(252, 203, 144, 1),
-    rgba(213, 126, 235, 1)
-  );
+  /* Your gradient background styles */
 }
 
-.mask-custom {
-  background: rgba(24, 24, 16, 0.2);
-  border-radius: 2em;
-  backdrop-filter: blur(15px);
-  border: 2px solid rgba(255, 255, 255, 0.05);
-  background-clip: padding-box;
-  box-shadow: 10px 10px 10px rgba(46, 54, 68, 0.03);
+.container {
+  padding: 0;
 }
 
-.modal {
-  display: block; /* Displayed when isModalOpen is true */
-  position: fixed;
-  z-index: 1;
-  padding-top: 100px;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
+.row {
+  margin: 0;
 }
 
-.modal-content {
-  background-color: #fefefe;
-  margin: auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
+.col-md-4,
+.col-md-8,
+.col-lg-3,
+.col-lg-9,
+.col-xl-3,
+.col-xl-9 {
+  padding: 0;
 }
 
-.close {
-  color: #aaaaaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: #000;
-  text-decoration: none;
+/* Group List Styles */
+.group-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
   cursor: pointer;
 }
-.portlet-body.chat-widget {
-  overflow-y: auto;
-  width: 300px;
-  height: 450px !important;
-  border: 1px solid rgba(255, 255, 255, 0.2); /* optional: adds a slight border around chat area */
-  padding: 10px; /* optional: adds some padding inside chat area */
+
+/* Dropdown Styles */
+.chat-dropdown {
+  margin: 10px;
 }
-.uploaded-image {
-  max-width: 300px; /* or whatever maximum width you want */
-  max-height: 300px; /* or whatever maximum height you want */
-  width: auto;
-  height: auto;
+
+/* Chat Messages Styles */
+.chat-messages {
+  padding: 10px;
+  background-color: #fff; /* Set your background color */
+  border: 1px solid #e0e0e0; /* Set your border styles */
 }
+
+.chat-message {
+  margin-bottom: 10px;
+}
+
+/* Other Chat Styles */
+/* Add any additional chat styles here */

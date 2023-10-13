@@ -24,7 +24,7 @@ export class ChatComponent implements OnInit {
   public pendingInterests: any[] = [];
   public selectedGroup: string | null = null;
   public channelsForSelectedGroup: string[] = [];
-  public selectedChannel: string | null = null;
+  public selectedChannel: string = "";
   
   createGroupForm: FormGroup = this.fb.group({
     group: ['']
@@ -210,52 +210,43 @@ export class ChatComponent implements OnInit {
   }
 
   onUpload() {
-  console.log("Selected File:", this.selectedfile);
+    console.log("Selected File:", this.selectedfile);
 
-  if (this.selectedfile) {
-    if (this.selectedChannel !== null) {
-      console.log("Selected Channel:", this.selectedChannel);
+    if (this.selectedfile) {
+      if (this.selectedChannel !== null) {
+        console.log("Selected Channel:", this.selectedChannel);
 
-      const fd = new FormData();
-      fd.append('image', this.selectedfile, this.selectedfile.name);
+        const fd = new FormData();
+        fd.append('image', this.selectedfile, this.selectedfile.name);
 
-      this.imguploadService.imgupload(fd).subscribe({
-        next: (res) => {
-          const imagepath = res.data.filename;
-          console.log("Sending image:", imagepath, "to channel:", this.selectedChannel);
-          this.socketService.sendImage({ image: imagepath, channel: this.selectedChannel! });
+        this.imguploadService.imgupload(fd).subscribe({
+          next: (res) => {
+            const imagepath = res.data.filename;
+            console.log("Sending image:", imagepath, "to channel:", this.selectedChannel);
+            this.socketService.sendImage({ image: imagepath, channel: this.selectedChannel! });
 
-          if (!this.messages[this.selectedChannel!]) {
-            this.messages[this.selectedChannel!] = [];
+            if (!this.messages[this.selectedChannel!]) {
+              this.messages[this.selectedChannel!] = [];
+            }
+
+          
+            // Push an image element to messages
+            const imageElement = `<img src="${'http://localhost:3000/images/' + imagepath}" alt="Uploaded Image" class="img-responsive" />`;
+            this.messages[this.selectedChannel!].push(imageElement);
+
+            this.messagecontent = "Image Uploaded"; // Set a default message for the image
+          },
+          error: (error) => {
+            console.error('Error uploading image:', error);
           }
-
-          // Push an image element to messages
-          const imageElement = `<img src="${'http://localhost:3000/images/' + imagepath}" alt="Uploaded Image" class="img-responsive" />`;
-          this.messages[this.selectedChannel!].push(imageElement);
-
-          this.messagecontent = "Image Uploaded"; // Set a default message for the image
-        },
-        error: (error) => {
-          console.error('Error uploading image:', error);
-        }
-      });
+        });
+      } else {
+        console.log("No channel selected");
+      }
     } else {
-      console.log("No channel selected");
+      console.log("No image selected");
     }
-  } else {
-    console.log("No image selected");
   }
-}
-  isImage(message: string): boolean {
-
-    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
-    const lowerCaseMessage = message.toLowerCase();
-    return imageExtensions.some(ext => lowerCaseMessage.endsWith(ext));
-  }
-
-
-
-
   //stops navigating to app page when clicked
   onGroupNameClick(event: Event, group: string): void {
     event.preventDefault();
@@ -263,19 +254,21 @@ export class ChatComponent implements OnInit {
     this.selectGroup(group);
   }
   
- // Emit a "User has joined the room" message to the selected channel
-  selectChannel(channel: string): void {
-    this.selectedChannel = channel;
-    console.log('Selected channel:', this.selectedChannel);
+  // Emit a "User has joined the room" message to the selected channel
+  selectChannel(channel: string | null): void {
+    if (channel !== null) {
+      this.selectedChannel = channel;
+      console.log('Selected channel:', this.selectedChannel);
 
-    // Emit a "User has joined the room" message to the selected channel
-    if (this.selectedChannel && this.username) {
-      const joinMessage = `${this.username} has joined the room`;
-      this.socketService.send({ message: joinMessage, channel: this.selectedChannel });
+      // Emit a "User has joined the room" message to the selected channel
+      if (this.selectedChannel && this.username) {
+        const joinMessage = `${this.username} has joined the room`;
+        this.socketService.send({ message: joinMessage, channel: this.selectedChannel });
+      }
+
+      console.log('Messages:', this.messages);
+      // Load messages for the selected channel if necessary.
     }
-
-    console.log('Messages:', this.messages);
-    // Load messages for the selected channel if necessary.
   }
 
 
@@ -291,7 +284,13 @@ export class ChatComponent implements OnInit {
       .subscribe({
         next: (channels) => {
           console.log('Received channels:', channels);
-          this.channelsForSelectedGroup = channels;
+
+          // Check if channels are not empty and are valid strings
+          if (channels && channels.length > 0) {
+            this.channelsForSelectedGroup = channels;
+          } else {
+            console.warn('No valid channels received.');
+          }
         },
         error: (error) => {
           console.error('Error fetching channels:', error);

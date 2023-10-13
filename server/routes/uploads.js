@@ -11,16 +11,17 @@ module.exports = function (app, formidable, fs, path) {
             // Log the 'files' object here to inspect its structure
             console.log(files);
 
-            // Assuming a single file for this example.
-            if (!files || !files.image || !files.image[0].filepath) {
+            // Check if 'files.image' exists and contains a file with 'filepath'
+            if (!files || !files.image || !files.image.filepath) {
                 return res.status(400).json({
                     status: "Fail",
                     message: "No image was uploaded or there was an error in processing the image."
                 });
             }
 
-            let oldpath = files.image[0].filepath;
-            let newpath = form.uploadDir + "/" + files.image[0].originalFilename;
+            let oldpath = files.image.filepath;
+            let newpath = form.uploadDir + "/" + files.image.originalFilename;
+
             fs.rename(oldpath, newpath, function (err) {
                 if (err) {
                     console.log("Error parsing the files");
@@ -32,14 +33,17 @@ module.exports = function (app, formidable, fs, path) {
                 }
 
                 // Construct the image path relative to your server's URL
-                const imagePath = `/userimages/${files.image[0].originalFilename}`;
+                const imagePath = `/userimages/${files.image.originalFilename}`;
 
                 // Send the result to the client if all is good, including the image path
-                res.send({
-                    result: 'OK',
-                    data: { 'filename': files.image[0].originalFilename, 'size': files.image[0].size },
+                res.status(200).json({
+                    status: "OK",
+                    data: {
+                        filename: files.image.originalFilename,
+                        size: files.image.size
+                    },
                     numberOfImages: 1,
-                    message: 'upload successful',
+                    message: 'Upload successful',
                     imagePath: imagePath // Include the image path in the response
                 });
             });

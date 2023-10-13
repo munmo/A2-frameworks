@@ -45,9 +45,5 @@ export class SocketService {
     });
   }
 
-  // Emit a request to join a channel to the socket server
-  //   joinChannel(channel: string) {
-  //     this.socket.emit('joinChannel', channel);
-  //   }
-  // 
+ 
 }

@@ -1,6 +1,7 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
+import { AuthService } from './auth.service';
 
 export interface Observer<T>
 {
@@ -20,7 +21,7 @@ export class AppComponent implements OnInit {
   paramsub: any;
   public valid: boolean = false;
   //newValid$: Observable<boolean> = of(false);
-
+  private authServices = inject(AuthService);
   constructor(private router:Router){}
 
   ngOnInit()
@@ -90,4 +91,11 @@ isAdmin(): boolean {
       alert("You Are Already On the Login Page");
     }
   }
+  logout(event:any){
+    
+    this.authServices.logout(event);
+    
+    
+    
+    }
 }
