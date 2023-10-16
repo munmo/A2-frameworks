@@ -146,6 +146,8 @@ Separate modules and functions were used for distinct requirements.
 | Technical Explanation     | The function first removes the user's pending interest in pendingRequest collection. Then, it finds the user in users collection and updates their group array to include the approved group name. |
 | Client-Server interaction | Approved users can access the channels within the approved group.                                                                                                                                  |
 
+### Delete Group
+
 | Aspect                    | Description                                                                                                                                               |
 | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Description               | This function handles fetching all existing group names and allowing deletion.                                                                            |
