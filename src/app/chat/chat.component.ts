@@ -213,43 +213,50 @@ export class ChatComponent implements OnInit {
     this.selectedfile = event.target.files[0];
   }
 
-  onUpload() {
-    console.log('Selected File:', this.selectedfile);
+ onUpload() {
+  console.log('Selected File:', this.selectedfile);
 
-    if (this.selectedfile) {
-      if (this.selectedChannel !== null) {
-        console.log('Selected Channel:', this.selectedChannel);
+  if (this.selectedfile) {
+    if (this.selectedChannel !== null) {
+      console.log('Selected Channel:', this.selectedChannel);
 
-        const fd = new FormData();
-        fd.append('image', this.selectedfile, this.selectedfile.name);
+      const fd = new FormData();
+      fd.append('image', this.selectedfile, this.selectedfile.name);
 
-        this.imguploadService.imgupload(fd).subscribe({
-          next: (res) => {
-            const imagepath = res.data.filename;
-            console.log('Sending image:', imagepath, 'to channel:', this.selectedChannel);
-            this.socketService.sendImage({ image: imagepath, channel: this.selectedChannel });
+      this.imguploadService.imgupload(fd).subscribe({
+        next: (res) => {
+          const imagepath = res.data.filename;
+          console.log('Sending image:', imagepath, 'to channel:', this.selectedChannel);
+          this.socketService.sendImage({ image: imagepath, channel: this.selectedChannel });
 
-            if (!this.messages[this.selectedChannel]) {
-              this.messages[this.selectedChannel] = [];
-            }
-
-            // Push an image element to messages
-            const imageElement = `<img src="${'http://localhost:3000/images/' + imagepath}" alt="Uploaded Image" class="img-responsive" />`;
-            this.messages[this.selectedChannel].push(imageElement);
-
-            this.messagecontent = 'Image Uploaded'; // Set a default message for the image
-          },
-          error: (error) => {
-            console.error('Error uploading image:', error);
+          if (!this.messages[this.selectedChannel]) {
+            this.messages[this.selectedChannel] = [];
           }
-        });
-      } else {
-        console.log('No channel selected');
-      }
+
+          // Wrap the image inside a container with fixed dimensions
+          const imageElement = `
+            <div class="image-container" style="width: 50px; height: 50px;">
+              <img src="${'http://localhost:3000/images/' + imagepath}" alt="Uploaded Image" class="img-responsive" />
+            </div>
+          `;
+
+          this.messages[this.selectedChannel].push(imageElement);
+
+          this.messagecontent = 'Image Uploaded'; // Set a default message for the image
+        },
+        error: (error) => {
+          console.error('Error uploading image:', error);
+        }
+      });
     } else {
-      console.log('No image selected');
+      console.log('No channel selected');
     }
+  } else {
+    console.log('No image selected');
   }
+}
+
+
 
   onGroupNameClick(event: Event, group: string): void {
     event.preventDefault();

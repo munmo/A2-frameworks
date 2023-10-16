@@ -2,7 +2,8 @@
 
 ## Git update:
 
-After each successful code implementation, the local changes were pushed to the repository.
+After each successful feature implementation, the local changes were pushed to the repository.
+The document contains data structure (server & client), Angular and Node architecture, and routes explained.
 
 ## Data Structure:
 
@@ -68,7 +69,7 @@ All features from assignment 1 (json files) has been implemented using MongoDB.
 
 ## Angular architecture:
 
-Components deal with the functionality, and it interacts with a service to handle HTTP requests. There are also models that represent users, groups, login, registration, and pending interests and so on. Also, the routes define how users navigate between different parts of the chat web-app application. On the client side, local storage is employed to retain user-specific data, such as determining the user's role to enable particular functionalities. In this part of the assignment, the data was stored in MongoDB and services were used.
+Components deal with the functionality, and it interacts with a service to handle HTTP requests. There are also models that represent users, groups, login, registration, and pending interests and so on. Also, the routes define how users navigate between different parts of the chat web-app application. On the client side, local storage is employed as well as MongoDB to retain user-specific data, such as determining the user's role to enable particular functionalities. Moreover, in this part of the assignment, services are partially implemented appropriately, such as user data and socket. However, for image uploads and auth services, it could not be implemented successfully.
 
 ## Node architecture:
 
@@ -144,20 +145,17 @@ Separate modules and functions were used for distinct requirements.
 | Return value              | Success with user details or error message.                                                                                                                                                        |
 | Technical Explanation     | The function first removes the user's pending interest in pendingRequest collection. Then, it finds the user in users collection and updates their group array to include the approved group name. |
 | Client-Server interaction | Approved users can access the channels within the approved group.                                                                                                                                  |
-<<<<<<< HEAD
-=======
-### Delete group
->>>>>>> bb001b7b15b8f6641adb67dc8f8bf4248004e8d5
 
-| Aspect                    | Description                                                                                     |
-| ------------------------- | ----------------------------------------------------------------------------------------------- |
-| Description               | This function handles fetching all existing group names and allowing deletion.                                        |
-| Route                     | /api/deleteGroups                                                                                  |
-| Method                    | POST                                                                                             |
-| Parameters                |                                                                                               |
-| Return value              | Success with group details.                                                                     |
-| Technical Explanation     | Reads groups collection to find all existing group names and remove the group from the groups collection according to the Super or Group admin's actions.                                       |
-| Client-Server interaction | Only approved/authorized users can view this page via Dashboard page. |
+| Aspect                    | Description                                                                                                                                               |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Description               | This function handles fetching all existing group names and allowing deletion.                                                                            |
+| Route                     | /api/deleteGroups                                                                                                                                         |
+| Method                    | POST                                                                                                                                                      |
+| Parameters                |                                                                                                                                                           |
+| Return value              | Success with group details.                                                                                                                               |
+| Technical Explanation     | Reads groups collection to find all existing group names and remove the group from the groups collection according to the Super or Group admin's actions. |
+| Client-Server interaction | Only approved/authorized users can view this page via Dashboard page.                                                                                     |
+
 ### Get channels
 
 | Aspect                    | Description                                                                                                                                                                    |

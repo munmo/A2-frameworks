@@ -87,3 +87,13 @@
   text-decoration: none;
   cursor: pointer;
 }
+.uploaded-image-container {
+  max-width: 30px;
+  max-height: 30px;
+  overflow: hidden;
+}
+
+.uploaded-image {
+  width: 50%;
+  height: auto;
+}

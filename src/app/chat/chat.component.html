@@ -49,8 +49,11 @@
                                 </div>
                             </div>
                             <div class="portlet-footer">
-                                <img [src]="imagepath" *ngIf="imagepath" alt="Received Image" class="img-responsive">
-
+                                
+                                <div class="uploaded-image-container" *ngIf="imagepath">
+                                    <img [src]="imagepath" alt="Received Image" class="img-responsive uploaded-image">
+                                </div>
+                        
                                 <form role="form">
                                     <div class="form-group">
                                         <textarea class="form-control" placeholder="Enter message..." type="text" [(ngModel)]="messagecontent"
