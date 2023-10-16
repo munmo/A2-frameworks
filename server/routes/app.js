@@ -36,12 +36,11 @@ client.connect((err) => {
     const pendingRequestsCollection = db.collection('pendingRequests');
     const groupsCollection = db.collection('groups');
     
-    // Any database-related operations can be added here...
 });
 
-// Import and initialize your socket logic
-const socketConfig = require('../socket'); // Correct the path to your socket.js file
-socketConfig.connect(io, 3000);  // Assuming you want your server to run on port 3000
+// Import and initialize socket
+const socketConfig = require('../socket'); 
+socketConfig.connect(io, 3000);  
 
 // Start the server
 server.listen(3000, () => {

@@ -69,7 +69,8 @@ async function main() {
         require('./routes/registerInterest')(db, app);
         require('./routes/confirmInterest')(db, app);
         require('./routes/pendingInterest')(db, app, ObjectId);
-        require('./routes/getChannels')(db, app);
+        require('./routes/getChannels')(db, app); 
+        require('./routes/getUserRegisteredGroups.js')(db, app);
         require('./routes/uploads.js')(app, formidable, fs, path);
         
         http.listen(PORT, () => {
