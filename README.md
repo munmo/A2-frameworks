@@ -4,132 +4,156 @@
 
 After each successful code implementation, the local changes were pushed to the repository.
 
-## Branching:
-
-Because the project was relatively small in scope, only a single branch was utilized.
-
 ## Data Structure:
+
+All features from assignment 1 (json files) has been implemented using MongoDB.
 
 ### Server side:
 
-- Users : The `users.json` file serves as the database for user's login and registration. Each user object have the following fields:
+#### 1. Users (user collection):
 
-username, email, pwd, roles, group, valid
+- \_id
+- username
+- email
+- pwd
+- roles
+- group
 
-- Pending interest : The `pendingInterest.json` file stores the pending interests from the users who wish to join certain groups.
+#### 2. Groups (group collection) :
 
-username, groupName
+- \_id
+- group
+- channels
 
-- Groups : The `groups.json` file serves as the database for group and its corresponding channels.
+#### 3. Requests (pendingRequest collection) :
 
-groupName, channels
+- \_id
+- username:
+- group:
 
 ### Client side:
 
-- Pending Interests: An array of pending interests is used with fields similar to what's on the server side:
+#### 1. Chat component :
 
-username, groupName
+- groupNames: contains the names of all available groups.
+- isAllowedToCreateGroup: determines if the current user is allowed to create a group.
+- isModalOpen: tracks whether the create group modal is open.
+- registeredGroups: contains the names of groups that the user is registered in.
+- username: stores the username of the currently logged-in user.
+- selectedGroup: stores the currently selected group.
+- channelsForSelectedGroup: contains the channels available for the selected group.
+- selectedChannel: stores the currently selected channel within a group.
+- selectedGroupName: stores the name of the currently selected group.
+- pendingInterests: contains information about the requesting user and the group they want to join.
+- receivedImages: contains image paths or URLs for images received in the chat.
+- ioConnection: manages the WebSocket connection.
+
+#### 2. Login component :
+
+- 'Userpwd' interface: username, email, password
+- 'Userobj' interface: username, email, valid, roles, group
+
+#### 3. Dashboard component (only super and group admin) :
+
+- pendingInterests: stores pending interest data.
+- confirmInterest: confirms pending interest and send the data to user details.
+
+#### 4. Profile component (not implemented):
+
+- onAvatarSelected(event: any): called when the user selects an avatar image using a file input. It captures the selected file.
+- saveDetails: prepares the data to be sent to the server for updating the user's profile
 
 - Angular Service: Angular service uses `HttpClient` to make API calls to the server to fetch and send data.
-
 - HTTP Options: an `httpOptions` object sets headers for HTTP requests.
-
-- Event Handlers: `registerInterest` and `confirmInterest` to handle user interactions, that read from or write to the server-side data.
 
 ## Angular architecture:
 
-Components deal with the functionality, and it interacts with a service to handle HTTP requests. There are also models that represent users, groups, login, registration, and pending interests and so on. Also, the routes define how users navigate between different parts of the chat web-app application. On the client side, local storage is employed to retain user-specific data, such as determining the user's role to enable particular functionalities. In this part of the assignment, the data was stored locally which can be quickly referenced or sent in subsequent server requests, however, services were not used.
+Components deal with the functionality, and it interacts with a service to handle HTTP requests. There are also models that represent users, groups, login, registration, and pending interests and so on. Also, the routes define how users navigate between different parts of the chat web-app application. On the client side, local storage is employed to retain user-specific data, such as determining the user's role to enable particular functionalities. In this part of the assignment, the data was stored in MongoDB and services were used.
 
 ## Node architecture:
 
-Separate modules and functions were used for distinct requirements. For example, a module in `registerInterest.js` file handles the functionality related to registering a user's interest in joining a certain group.
+Separate modules and functions were used for distinct requirements.
 
-Functions within this module, such as writing to the `pendingInterest.json` file, are called when a user sends specific HTTP requests from the client side.
-
-Global variables like `BACKEND_URL` are used to store information. For example, the chat component on the client side, `chat.component.ts`, interacts with this architecture by making HTTP requests, such as fetching a username and posting new interests to join a group. To communicate with the server's endpoints, Angular's HttpClient is used.
+- fs: Handle the file system, such as reading and writing files.
+- path: Utilized to manage file paths.
+- express: Web application framework that simplifies the process of building web applications and APIs in Node.js.
+- cors: Enable CORS in Express applications.
+- mongodb: Provides NoSQL database solution to connect, query, and manage data.
+- socket: Enables real-time bidirectional communication between the server and clients.
+- formidable: Simplifies the handling of file uploads and form data parsing.
+- chai: Used with the Mocha testing framework to enable assertion testing in JavaScript.
 
 ## Routes:
 
 ### Login
 
-| Aspect                    | Description                                                                                                                                                               |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Description               | This function validates user login by matching email and password.                                                                                                        |
-| Route                     | /api/auth/login                                                                                                                                                           |
-| Method                    | POST                                                                                                                                                                      |
-| Parameters                | req.body.email, req.body.password                                                                                                                                         |
-| Return value              | {"ok": true, "userData": {[i]}}                                                                                                                                           |
-| Technical Explanation     | The function reads users.json to find a matching email and password. It also sets the valid property to true for the user.                                                |
-| Client-Server interaction | Upon successful login, the server-side users.json remains unchanged but returns validation status. The client updates its state and redirect the user to an account page. |
+| Aspect                    | Description                                                                                                                      |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Description               | This function validates user login by matching email and password.                                                               |
+| Route                     | /api/login                                                                                                                       |
+| Method                    | POST                                                                                                                             |
+| Parameters                | req.body.email, req.body.password                                                                                                |
+| Return value              | Success with user details or error message.                                                                                      |
+| Technical Explanation     | The function reads users collection to find a matching email and password. It also sets the valid property to true for the user. |
+| Client-Server interaction | Upon successful login, it returns validation status. The client updates its state and redirect the user to an account page.      |
 
 ### Register
 
-| Aspect                    | Description                                                                                                                                                                                                       |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Description               | This function registers a new user.                                                                                                                                                                               |
-| Route                     | /api/auth/register                                                                                                                                                                                                |
-| Method                    | POST                                                                                                                                                                                                              |
-| Parameters                | req.body.email, req.body.email, req.body.password                                                                                                                                                                 |
-| Return value              | {ok: true, message:'User registered successfully'}                                                                                                                                                                |
-| Technical Explanation     | The function reads users.json and adds a new user object to it. The valid field is set to false.                                                                                                                  |
-| Client-Server interaction | Upon successful registration, the server-side users.json is updated with the new user data. The client-side will update its state to show that registration was successful and redirect the user to a login page. |
+| Aspect                    | Description                                                                                                                                                                                                 |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Description               | This function registers a new user.                                                                                                                                                                         |
+| Route                     | /api/register                                                                                                                                                                                               |
+| Method                    | POST                                                                                                                                                                                                        |
+| Parameters                | req.body.email, req.body.email, req.body.password                                                                                                                                                           |
+| Return value              | Success with user details or error message.                                                                                                                                                                 |
+| Technical Explanation     | The function reads users collection and check whether the user is already registered with the entered username or email and adds a new user object to it. The valid field is set to false.                  |
+| Client-Server interaction | Upon successful registration, the users collection is updated with the new user data. The client-side will update its state to show that registration was successful and redirect the user to a login page. |
 
 ### Get group names
 
-| Aspect                    | Description                                                                                                                                                                        |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Description               | This function handles fetching all existing group names.                                                                                                                           |
-| Route                     | /api/auth/getGroups                                                                                                                                                                |
-| Method                    | GET                                                                                                                                                                                |
-| Parameters                | NA                                                                                                                                                                                 |
-| Return value              | ["groupName1","groupName2"...]                                                                                                                                                     |
-| Technical Explanation     | Reads groups.json to find all existing group names and returns them in an array.                                                                                                   |
-| Client-Server interaction | The server-side groups.json remains unchanged but returns the array of group names on client-side. The approved client can only update json file and its display by adding groups. |
+| Aspect                    | Description                                                                                     |
+| ------------------------- | ----------------------------------------------------------------------------------------------- |
+| Description               | This function handles fetching all existing group names.                                        |
+| Route                     | /api/getGroups                                                                                  |
+| Method                    | GET                                                                                             |
+| Parameters                | NA                                                                                              |
+| Return value              | Success with group details.                                                                     |
+| Technical Explanation     | Reads groups collection to find all existing group names.                                       |
+| Client-Server interaction | Even unapproved users can view all of the existing groups but cannot access without permission. |
 
 ### Register interest in groups
 
-| Aspect                    | Description                                                                                                                                                                                  |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Description               | This function records a user's interest in joining a specific group.                                                                                                                         |
-| Route                     | /api/auth/registerInterest                                                                                                                                                                   |
-| Method                    | POST                                                                                                                                                                                         |
-| Parameters                | req.body.username, req.body.groupName                                                                                                                                                        |
-| Return value              | {message: "Interest registered"}                                                                                                                                                             |
-| Technical Explanation     | The function reads pendingInterest.json and adds a new interest object to it.                                                                                                                |
-| Client-Server interaction | Upon registration of interest, the server-side pendingInterest.json file is updated. The client will have pending request groups in the account page until approved by super or group admin. |
+| Aspect                    | Description                                                                                                                                                                                            |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Description               | This function records a user's interest in joining a specific group.                                                                                                                                   |
+| Route                     | /api/registerInterest                                                                                                                                                                                  |
+| Method                    | POST                                                                                                                                                                                                   |
+| Parameters                | req.body.username, req.body.groupName                                                                                                                                                                  |
+| Return value              | Success message                                                                                                                                                                                        |
+| Technical Explanation     | The function adds a new interest object to it pendingRequest collection.                                                                                                                               |
+| Client-Server interaction | Upon registration of interest, the server-side pendingRequest collection is updated. The Super or Group admin can view the updated collection from their dashboard and choose to give approval or not. |
 
 ### Confirm user interest and update group
 
-| Aspect                    | Description                                                                                                                                                                                |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Description               | This function confirms a user's interest in joining a group, updates the user's groups, and removes the pending interest.                                                                  |
-| Route                     | /api/auth/confirmInterest                                                                                                                                                                  |
-| Method                    | POST                                                                                                                                                                                       |
-| Parameters                | req.body.username, req.body.groupName                                                                                                                                                      |
-| Return value              | {message: "Interest confirmed and user updated"}                                                                                                                                           |
-| Technical Explanation     | The function first removes the user's pending interest in pendingInterest.json. Then, it finds the user in users.json and updates their group array to include the new group.              |
-| Client-Server interaction | On the server-side, both users.json and pendingInterest.json are updated. On the client-side, a confirmation message will be displayed and updates the account page with registered group. |
+| Aspect                    | Description                                                                                                                                                                                        |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Description               | This function confirms a user's interest in joining a group, updates the user's groups, and removes the pending interest.                                                                          |
+| Route                     | /api/confirmInterest                                                                                                                                                                               |
+| Method                    | POST                                                                                                                                                                                               |
+| Parameters                | req.body.username, req.body.groupName                                                                                                                                                              |
+| Return value              | Success with user details or error message.                                                                                                                                                        |
+| Technical Explanation     | The function first removes the user's pending interest in pendingRequest collection. Then, it finds the user in users collection and updates their group array to include the approved group name. |
+| Client-Server interaction | Approved users can access the channels within the approved group.                                                                                                                                  |
 
 ### Get channels
 
-| Aspect                    | Description                                                                                                                                                       |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Description               | Fetch channels for a selected group.                                                                                                                              |
-| Route                     | /api/auth/getChannels                                                                                                                                             |
-| Method                    | POST                                                                                                                                                              |
-| Parameters                | groupName: string, username: string                                                                                                                               |
-| Return value              | return group.channels or 403 status code depending on the registration.                                                                                           |
-| Technical Explanation     | From the groups.json, given the groupName and username, fetches the channels for that group if the user has permission.                                           |
-| Client-Server interaction | On the server-side, the list of channels for the selected group will be updated. If unauthorized, an error message is displayed and the channels will not appear. |
-
-### Check access
-
-| Aspect                    | Description                                                                                            |
-| ------------------------- | ------------------------------------------------------------------------------------------------------ |
-| Description               | Determines if a user has access to a specified group.                                                  |
-| Route                     | /api/auth/getChannels                                                                                  |
-| Method                    | POST                                                                                                   |
-| Parameters                | groupName: string, username: string                                                                    |
-| Return value              | bool:true or false                                                                                     |
-| Technical Explanation     | Determines whether a user has access to the given group based on their roles as well as permitted user |
-| Client-Server interaction | NA                                                                                                     |
+| Aspect                    | Description                                                                                                                                                                    |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Description               | Fetch channels for a selected group.                                                                                                                                           |
+| Route                     | /api/getChannels                                                                                                                                                               |
+| Method                    | POST                                                                                                                                                                           |
+| Parameters                | group: string, username: string                                                                                                                                                |
+| Return value              | Success with user details or error message.                                                                                                                                    |
+| Technical Explanation     | From the groups collection, given the group and username, fetches the channels for that group if the user has permission.                                                      |
+| Client-Server interaction | If the user is authorized to access the group, they will also be able to access the channels. If unauthorized, an error message is displayed and the channels will not appear. |
+|                           |
