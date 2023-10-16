@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http'; 
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { SocketService } from '../socket.service';
 import { ImguploadService } from '../imgupload.service';
 import { ChangeDetectorRef } from '@angular/core';
 
-const httpOptions =
-{
-  headers: new HttpHeaders({ 'Content-Type' : 'application/json'})
+const httpOptions = {
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
 };
 
 const BACKEND_URL = 'http://localhost:3000';
@@ -24,18 +23,22 @@ export class ChatComponent implements OnInit {
   public pendingInterests: any[] = [];
   public selectedGroup: string | null = null;
   public channelsForSelectedGroup: string[] = [];
-  public selectedChannel: string = "";
+  public selectedChannel: string = '';
+  public selectedGroupName: string | null = null;
+  public registeredGroups: string[] = [];
+
   
   createGroupForm: FormGroup = this.fb.group({
     group: ['']
   });
 
-  messagecontent: string = "";
+  messagecontent: string = '';
   messages: { [channel: string]: any[] } = {};
   ioConnection: any;
   selectedfile: any = null;
-  imagepath = "";
+  imagepath = '';
   username: string | null = null; // Store the username
+  receivedImages: string[] = [];
 
   constructor(
     private http: HttpClient,
@@ -43,14 +46,25 @@ export class ChatComponent implements OnInit {
     private socketService: SocketService,
     private imguploadService: ImguploadService,
     private cdr: ChangeDetectorRef
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    console.log("Component ngOnInit called");
+    console.log('Component ngOnInit called');
     this.username = localStorage.getItem('username'); // Fetch the username from local storage
     this.initSocketConnection();
     this.loadExistingGroups();
     this.determineUserPermissions();
+
+  }
+ 
+  // Function to check if the user is registered for a group
+  isUserRegistered(group: string): boolean {
+    if (!this.username) {
+      return false; // User not logged in, so they can't be registered for any group
+    }
+
+    // Check if the user is registered for the group
+    return this.registeredGroups.includes(group);
   }
 
   private initSocketConnection(): void {
@@ -66,7 +80,7 @@ export class ChatComponent implements OnInit {
   }
 
   loadExistingGroups(): void {
-    this.http.get<string[]>(BACKEND_URL + '/api/getGroups', httpOptions)
+    this.http.get<string[]>(`${BACKEND_URL}/api/getGroups`, httpOptions)
       .subscribe({
         next: (data) => {
           this.groupNames = data;
@@ -84,9 +98,9 @@ export class ChatComponent implements OnInit {
   closeCreateGroupModal(): void {
     this.isModalOpen = false;
   }
-  // Pending requests - only super and group user can see
+
   loadPendingInterests(): void {
-    this.http.get<any[]>(BACKEND_URL + '/api/pendingInterest')
+    this.http.get<any[]>(`${BACKEND_URL}/api/pendingInterest`, httpOptions)
       .subscribe({
         next: (data) => {
           this.pendingInterests = data;
@@ -97,13 +111,9 @@ export class ChatComponent implements OnInit {
       });
   }
 
-  // Confirm
   confirmInterest(username: string, group: string): void {
     const httpOptions = {
-      headers: {
-      
-      }
-     
+      headers: {}
     };
 
     this.http.post(`${BACKEND_URL}/api/confirmInterest`, { username, group }, httpOptions)
@@ -118,14 +128,13 @@ export class ChatComponent implements OnInit {
       });
   }
 
-  //create group
   createGroup(): void {
     const groupControl = this.createGroupForm.get('group');
 
     if (groupControl) {
       const group = groupControl.value;
       if (group) {
-        this.http.post<any>(BACKEND_URL + '/api/addGroup', { "group": group, "channels": [] }, httpOptions)
+        this.http.post<any>(`${BACKEND_URL}/api/addGroup`, { group: group, channels: [] }, httpOptions)
           .subscribe({
             next: (data) => {
               console.log(data);
@@ -146,7 +155,6 @@ export class ChatComponent implements OnInit {
     }
   }
 
-  //register interest in a group - event: to prevent page navigating to account automatically
   registerInterest(event: Event, group: string): void {
     event.preventDefault();
 
@@ -157,12 +165,12 @@ export class ChatComponent implements OnInit {
       return;
     }
 
-    console.log("registerInterest called with:", group);
+    console.log('registerInterest called with:', group);
 
     this.http.post(`${BACKEND_URL}/api/registerInterest`, { username, group }, httpOptions)
       .subscribe({
         next: (data) => {
-          alert("Interest registered!");
+          alert('Interest registered!');
           console.log('Interest registered:', data);
         },
         error: (error) => {
@@ -170,8 +178,8 @@ export class ChatComponent implements OnInit {
         }
       });
   }
+  
 
-  //chat
   initIoConnection(): void {
     this.socketService.initSocket();
     this.ioConnection = this.socketService.onMessage()
@@ -185,36 +193,32 @@ export class ChatComponent implements OnInit {
       });
   }
 
- 
-
   chat() {
     if (this.messagecontent && this.selectedChannel) {
-      console.log("Sending message:", this.messagecontent, "to channel:", this.selectedChannel);
+      console.log('Sending message:', this.messagecontent, 'to channel:', this.selectedChannel);
       this.socketService.send({ message: this.messagecontent, channel: this.selectedChannel });
 
-      // display the sent message
       if (!this.messages[this.selectedChannel]) {
         this.messages[this.selectedChannel] = [];
       }
       this.messages[this.selectedChannel].push(this.messagecontent);
 
-      this.messagecontent = "";
+      this.messagecontent = '';
     } else {
-      console.log("No message or channel selected");
+      console.log('No message or channel selected');
     }
   }
-
 
   onFileSelected(event: any) {
     this.selectedfile = event.target.files[0];
   }
 
   onUpload() {
-    console.log("Selected File:", this.selectedfile);
+    console.log('Selected File:', this.selectedfile);
 
     if (this.selectedfile) {
       if (this.selectedChannel !== null) {
-        console.log("Selected Channel:", this.selectedChannel);
+        console.log('Selected Channel:', this.selectedChannel);
 
         const fd = new FormData();
         fd.append('image', this.selectedfile, this.selectedfile.name);
@@ -222,60 +226,75 @@ export class ChatComponent implements OnInit {
         this.imguploadService.imgupload(fd).subscribe({
           next: (res) => {
             const imagepath = res.data.filename;
-            console.log("Sending image:", imagepath, "to channel:", this.selectedChannel);
-            this.socketService.sendImage({ image: imagepath, channel: this.selectedChannel! });
+            console.log('Sending image:', imagepath, 'to channel:', this.selectedChannel);
+            this.socketService.sendImage({ image: imagepath, channel: this.selectedChannel });
 
-            if (!this.messages[this.selectedChannel!]) {
-              this.messages[this.selectedChannel!] = [];
+            if (!this.messages[this.selectedChannel]) {
+              this.messages[this.selectedChannel] = [];
             }
 
-          
             // Push an image element to messages
             const imageElement = `<img src="${'http://localhost:3000/images/' + imagepath}" alt="Uploaded Image" class="img-responsive" />`;
-            this.messages[this.selectedChannel!].push(imageElement);
+            this.messages[this.selectedChannel].push(imageElement);
 
-            this.messagecontent = "Image Uploaded"; // Set a default message for the image
+            this.messagecontent = 'Image Uploaded'; // Set a default message for the image
           },
           error: (error) => {
             console.error('Error uploading image:', error);
           }
         });
       } else {
-        console.log("No channel selected");
+        console.log('No channel selected');
       }
     } else {
-      console.log("No image selected");
+      console.log('No image selected');
     }
   }
-  //stops navigating to app page when clicked
+
   onGroupNameClick(event: Event, group: string): void {
     event.preventDefault();
-    console.log("Group name clicked:", group,);
+    console.log('Group name clicked:', group);
     this.selectGroup(group);
+    this.selectedGroupName = group;
   }
-  
-  // Emit a "User has joined the room" message to the selected channel
-  selectChannel(channel: string | null): void {
-    if (channel !== null) {
-      this.selectedChannel = channel;
-      console.log('Selected channel:', this.selectedChannel);
 
-      // Emit a "User has joined the room" message to the selected channel
-      if (this.selectedChannel && this.username) {
-        const joinMessage = `${this.username} has joined the room`;
-        this.socketService.send({ message: joinMessage, channel: this.selectedChannel });
-      }
+// Inside ChatComponent class
 
-      console.log('Messages:', this.messages);
-      // Load messages for the selected channel if necessary.
+// Add a variable to track the current channel
+currentChannel: string | null = null;
+
+// selectChannel function
+selectChannel(channel: string | null): void {
+  if (channel !== null) {
+    // Check if the user is switching from one channel to another
+    if (this.currentChannel !== null) {
+      const leaveMessage = `${this.username} has left the room`;
+      this.socketService.send({ message: leaveMessage, channel: this.currentChannel });
+    }
+
+    this.currentChannel = channel; // Update the current channel
+    console.log('Selected channel:', this.currentChannel);
+
+    if (this.currentChannel && this.username) {
+      const joinMessage = `${this.username} has joined the room`;
+      this.socketService.send({ message: joinMessage, channel: this.currentChannel });
     }
   }
+}
 
+// leaveChannel function to leave the current channel
+leaveChannel(): void {
+  if (this.currentChannel && this.username) {
+    const leaveMessage = `${this.username} has left the room`;
+    this.socketService.send({ message: leaveMessage, channel: this.currentChannel });
+    this.currentChannel = null; // Reset the current channel
+  }
+}
 
   selectGroup(group: string): void {
     const username = localStorage.getItem('username');
     if (!username) {
-      console.error("Username not found in local storage");
+      console.error('Username not found in local storage');
       return;
     }
     console.log('Requesting channels for:', { group, username });
@@ -285,7 +304,6 @@ export class ChatComponent implements OnInit {
         next: (channels) => {
           console.log('Received channels:', channels);
 
-          // Check if channels are not empty and are valid strings
           if (channels && channels.length > 0) {
             this.channelsForSelectedGroup = channels;
           } else {
@@ -295,7 +313,7 @@ export class ChatComponent implements OnInit {
         error: (error) => {
           console.error('Error fetching channels:', error);
           if (error.status === 403) {
-            alert("You need to register for this group!");
+            alert('You need to register for this group!');
           }
         }
       });

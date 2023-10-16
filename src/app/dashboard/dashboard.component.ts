@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 const BACKEND_URL = 'http://localhost:3000';
 
@@ -10,16 +10,18 @@ const BACKEND_URL = 'http://localhost:3000';
 })
 export class DashboardComponent implements OnInit {
   public pendingInterests: any[] = [];
+  public groups: string[] = []; // To store the list of groups
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
     this.loadPendingInterests();
+    this.loadGroups();
   }
 
-  // Pending requests - only super and group user can see
+  // Load pending interests
   loadPendingInterests(): void {
-    this.http.get<any[]>(BACKEND_URL + '/api/pendingInterest')
+    this.http.get<any[]>(`${BACKEND_URL}/api/pendingInterest`)
       .subscribe({
         next: (data) => {
           this.pendingInterests = data;
@@ -30,13 +32,23 @@ export class DashboardComponent implements OnInit {
       });
   }
 
-  // Confirm
+  // Load groups
+  loadGroups(): void {
+    this.http.get<string[]>(`${BACKEND_URL}/api/getGroups`)
+      .subscribe({
+        next: (data) => {
+          this.groups = data;
+        },
+        error: (error) => {
+          console.error('Error fetching groups:', error);
+        }
+      });
+  }
+
+  // Confirm interest
   confirmInterest(username: string, group: string): void {
     const httpOptions = {
-      headers: {
-        // Your headers here, e.g., 'Content-Type': 'application/json'
-      }
-      // other options
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     };
 
     this.http.post(`${BACKEND_URL}/api/confirmInterest`, { username, group }, httpOptions)
@@ -44,6 +56,25 @@ export class DashboardComponent implements OnInit {
         next: (data) => {
           console.log('Interest confirmed:', data);
           this.loadPendingInterests(); // Refresh list
+        },
+        error: (error) => {
+          console.error('Error:', error);
+        }
+      });
+  }
+
+  // Delete a group
+
+  deleteGroup(groupName: string): void {
+    const httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    };
+
+    this.http.delete(`${BACKEND_URL}/api/deleteGroup/${groupName}`, httpOptions)
+      .subscribe({
+        next: (data) => {
+          console.log('Group deleted:', data);
+          this.loadGroups(); // Refresh list of groups
         },
         error: (error) => {
           console.error('Error:', error);

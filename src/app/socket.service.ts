@@ -44,6 +44,4 @@ export class SocketService {
       this.socket.on('imageReceived', (data: { channel: string; image: string }) => observer.next(data));
     });
   }
-
- 
 }

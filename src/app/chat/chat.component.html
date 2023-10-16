@@ -15,9 +15,10 @@
                                         <button (click)="openCreateGroupModal()">Create Group</button>
                                     </div>
                                     <ul class="list-unstyled mb-0">
-                                        <li *ngFor="let group of groupNames" class="group-list-item">
-                                            <span (click)="onGroupNameClick($event, group)">{{ group }}</span>
-                                            <button type="button" *ngIf="!isAllowedToCreateGroup"
+                                        <li *ngFor="let group of groupNames" class="group-list-item"
+                                            [ngClass]="{ 'selected-group': group === selectedGroupName }">
+                                            <span class="list-group-item d-flex justify-content-between align-items-center" (click)="onGroupNameClick($event, group)">{{ group }}</span>
+                                            <button type="button" *ngIf="!isAllowedToCreateGroup && !isUserRegistered(group)"
                                                 (click)="registerInterest($event, group)">
                                                 Register Interest
                                             </button>
@@ -38,35 +39,34 @@
                                 </select>
                             </div>
             
-                            <!-- Chat Messages -->
-                            <div class="chat-messages">
-                                <div class="portlet-body chat-widget" style="overflow-y: auto; width: auto; height: 300px;">
-                                    <div *ngFor="let message of messages[selectedChannel]" class="chat-message">
-                                        <div class="media">
-                                            <div class="media-body" [innerHTML]="message"></div>
-                                        </div>
+                        <!-- Chat Messages -->
+                        <div class="chat-messages">
+                            <div class="portlet-body chat-widget" style="overflow-y: auto; width: auto; height: 300px;">
+                                <div *ngFor="let message of messages[selectedChannel]" class="chat-message">
+                                    <div class="media">
+                                        <div class="media-body" [innerHTML]="message"></div>
                                     </div>
                                 </div>
-                                <div class="portlet-footer">
-                                    <img [src]="'http://localhost:3000/images/' + imagepath" *ngIf="imagepath" alt="Uploaded Image"
-                                        class="img-responsive">
-                                    <form role="form">
-                                        <div class="form-group">
-                                            <textarea class="form-control" placeholder="Enter message..." type="text"
-                                                [(ngModel)]="messagecontent" name="messagecontent" id="messagecontent"></textarea>
-                                        </div>
-                                        <div class="form-group">
-                                            <input type="file" class="form-control" (change)="onFileSelected($event)"
-                                                name="uploadfile" id="uploadfile" />
-                                            <button class="btn btn-primary" type="button" (click)="onUpload()">Send photo</button>
-                                            <button type="button" (click)="chat()" class="btn btn-default pull-right">Send</button>
-                                        </div>
-                                    </form>
-                                </div>
+                            </div>
+                            <div class="portlet-footer">
+                                <img [src]="imagepath" *ngIf="imagepath" alt="Received Image" class="img-responsive">
+
+                                <form role="form">
+                                    <div class="form-group">
+                                        <textarea class="form-control" placeholder="Enter message..." type="text" [(ngModel)]="messagecontent"
+                                            name="messagecontent" id="messagecontent"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="file" class="form-control" (change)="onFileSelected($event)" name="uploadfile"
+                                            id="uploadfile" />
+                                        <button class="btn btn-primary" type="button" (click)="onUpload()">Send photo</button>
+                                        <button type="button" (click)="chat()" class="btn btn-default pull-right">Send</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
-                    </div>
-                </div>
+
+
             
                 <!-- Create group Modal -->
                 <div *ngIf="isModalOpen" class="modal">
@@ -81,4 +81,4 @@
                         </form>
                     </div>
                 </div>
-            </section>
+            

@@ -52,7 +52,7 @@ export class RegisterComponent implements OnInit {
     this.userobj.username = data.username;
     this.userobj.roles = data.roles;
 
-    this.httpClient.post(BACKEND_URL + '/api/auth', this.userpwd, httpOptions)
+    this.httpClient.post(BACKEND_URL + '/api/register', this.userpwd, httpOptions)
   .subscribe({
     next: (response: any) => {
       if (response.ok) {
