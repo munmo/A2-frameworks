@@ -21,7 +21,7 @@ describe('Login API', () => {
 
       // Define a route handler for '/api/login'
       app.post('/api/login', async (req, res) => {
-        // ... Your route handler logic ...
+        
       });
 
       server = app.listen(3000); // Start the Express app
@@ -37,7 +37,7 @@ describe('Login API', () => {
       await db.client.close();
       server.close(); // Close the Express app
 
-      this.timeout(30000); // Increase the timeout if needed
+      this.timeout(30000); 
     } catch (err) {
       console.error('Error in teardown:', err);
     }

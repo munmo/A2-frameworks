@@ -5,8 +5,8 @@ module.exports = function (db) {
   // Define a route to get the registered groups for the user
   router.get('/getUserRegisteredGroups', async (req, res) => {
     try {
-      // Replace 'username' with your actual logic to get the username of the currently logged in user.
-      const username = 'username'; // Replace with your actual logic
+      
+      const username = 'username';
 
       // Query MongoDB for the user's data
       const usersCollection = db.collection('users');

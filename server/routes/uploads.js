@@ -8,7 +8,7 @@ module.exports = function (app, formidable, fs, path) {
         form.keepExtensions = true;
 
         form.parse(req, async (err, fields, files) => {
-            // Log the 'files' object here to inspect its structure
+            // Log 
             console.log(files);
 
             // Check if 'files.image' exists and contains a file with 'filepath'
@@ -32,7 +32,6 @@ module.exports = function (app, formidable, fs, path) {
                     });
                 }
 
-                // Construct the image path relative to your server's URL
                 const imagePath = `/userimages/${files.image.originalFilename}`;
 
                 // Send the result to the client if all is good, including the image path

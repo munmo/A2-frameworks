@@ -44,7 +44,7 @@ const client = new MongoClient(uri);
 
 app.use(cors());
 app.use(express.json());
-// Serve your Angular app (adjust the path accordingly)
+// Serve Angular app (adjust the path accordingly)
 app.use(express.static(__dirname + '/angular-dist'));
 // Serve images from the '/images' route
 app.use('/images', express.static(path.join(__dirname, '../server/userimages')));
@@ -63,6 +63,7 @@ async function main() {
         // Link routes to the main server
         require('./routes/addGroup')(db, app);
         require('./routes/getGroups')(db, app, ObjectId);
+        require('./routes/deleteGroups')(db, app); 
         require('./routes/login')(db, app, ObjectId);
         require('./routes/register')(db, app);
         require('./routes/users')(db, app, ObjectId);

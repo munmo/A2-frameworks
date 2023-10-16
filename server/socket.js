@@ -38,7 +38,7 @@ module.exports = {
         socket.on('selectChannel', (channel) => {
           console.log('User joined channel:', channel);
 
-          const username = socket.username || 'Unknown'; // Fetch username from MongoDB or use a default value
+          const username = socket.username || 'Unknown'; // Fetch username from MongoDB 
           const joinMessage = `${username} has joined the room`;
 
           // Emit the join message to the selected channel

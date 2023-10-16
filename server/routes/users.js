@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-// This function assumes that you're passing the database connection from your main server file
 module.exports = function(db) {
   router.get('/userData', async (req, res) => {
     const authenticatedUser = req.user;
