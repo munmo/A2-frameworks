@@ -1,0 +1,61 @@
+const request = require('supertest');
+const express = require('express');
+const { MongoClient } = require('mongodb');
+const should = require('chai').should(); 
+
+describe('Get Groups API', () => {
+  let db;
+  let app;
+  let server;
+
+  before(async function () {
+    const uri = 'mongodb://localhost:27017/chat';
+
+    try {
+      const client = new MongoClient(uri);
+      await client.connect();
+      db = client.db();
+
+      app = express();
+
+      // route handler
+      app.get('/api/getGroups', async (req, res) => {
+        try {
+          const groupsCollection = db.collection('groups');
+          const groups = await groupsCollection.find({}).toArray();
+          res.json(groups.map(group => group.group));
+        } catch (err) {
+          console.error('Error:', err);
+          res.status(500).json({ message: 'Internal Server Error' });
+        }
+      });
+
+      server = app.listen(3000); // Start the Express app
+    } catch (err) {
+      console.error('Error in setup:', err);
+    }
+  });
+
+  after(async function () {
+    try {
+      await db.client.close();
+      server.close(); // Close the Express app
+    } catch (err) {
+      console.error('Error in teardown:', err);
+    }
+  });
+
+  it('should return an array of groups', async () => {
+    const response = await request(server).get('/api/getGroups');
+
+    response.should.have.status(200);
+    response.body.should.be.an('array');
+  });
+
+  it('should handle errors and return a 500 status code for database issues', async () => {
+    const response = await request(server).get('/api/getGroups');
+
+    response.should.have.status(500);
+    response.body.should.have.property('message', 'Internal Server Error');
+  });
+});

@@ -1,8 +1,7 @@
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const { MongoClient } = require('mongodb');
+const request = require('supertest');
 const express = require('express');
-chai.use(chaiHttp);
+const { MongoClient, ObjectID } = require('mongodb');
+const should = require('chai').should();
 
 describe('Login API', () => {
   let db;
@@ -19,14 +18,26 @@ describe('Login API', () => {
 
       app = express();
 
-      // Define a route handler for '/api/login'
       app.post('/api/login', async (req, res) => {
-        
+        const { email, password } = req.body;
+
+        try {
+          // Query MongoDB for the user
+          const usersCollection = db.collection('users');
+          const user = await usersCollection.findOne({ email });
+
+          if (user && user.pwd === password) {
+            res.json({ ok: true, userData: { _id: user._id, username: user.username } });
+          } else {
+            res.status(401).json({ ok: false, message: 'Authentication failed' });
+          }
+        } catch (err) {
+          console.error('Error:', err);
+          res.status(500).json({ message: 'Internal Server Error' });
+        }
       });
 
       server = app.listen(3000); // Start the Express app
-
-      this.timeout(30000); // Increase the timeout if needed
     } catch (err) {
       console.error('Error in setup:', err);
     }
@@ -36,36 +47,30 @@ describe('Login API', () => {
     try {
       await db.client.close();
       server.close(); // Close the Express app
-
-      this.timeout(30000); 
     } catch (err) {
       console.error('Error in teardown:', err);
     }
   });
 
-  it('should return a 400 status code if email and password are missing', async () => {
-    const response = await chai.request(server).post('/api/login');
-    chai.expect(response).to.have.status(400);
-    chai.expect(response.body).to.have.property('ok').to.equal(false);
-    chai.expect(response.body).to.have.property('message').to.equal('Email and password are required');
+  it('should return a 401 status code for invalid credentials', async () => {
+    const response = await request(server)
+      .post('/api/login')
+      .send({ email: 'abc@gmail.com', password: 'wrongpassword' });
+
+    response.should.have.status(401);
+    response.body.should.have.property('ok', false);
+    response.body.should.have.property('message', 'Authentication failed');
   });
 
-  it('should return a 200 status code and user data if login is successful', async () => {
-    const response = await chai
-      .request(server)
+  it('should return a 200 status code and user data for valid credentials', async () => {
+    const response = await request(server)
       .post('/api/login')
-      .send({ email: 'abc@gmail.com', password: '123' }); // Valid credentials
-    chai.expect(response).to.have.status(200);
-    chai.expect(response.body).to.have.property('ok').to.equal(true);
-    chai.expect(response.body).to.have.property('userData');
-  });
+      .send({ email: 'abc@gmail.com', password: '123' });
 
-  it('should return a 200 status code and { ok: false } if login fails', async () => {
-    const response = await chai
-      .request(server)
-      .post('/api/login')
-      .send({ email: 'nonexistent@example.com', password: 'wrongpassword' }); // Invalid credentials
-    chai.expect(response).to.have.status(200);
-    chai.expect(response.body).to.have.property('ok').to.equal(false);
+    response.should.have.status(200);
+    response.body.should.have.property('ok', true);
+    response.body.should.have.property('userData');
+    response.body.userData.should.have.property('_id').that.is.a('string'); 
+    response.body.userData.should.have.property('username').that.is.a('string'); 
   });
 });

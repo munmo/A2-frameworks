@@ -84,6 +84,25 @@ Separate modules and functions were used for distinct requirements.
 - formidable: Simplifies the handling of file uploads and form data parsing.
 - chai: Used with the Mocha testing framework to enable assertion testing in JavaScript.
 
+## Testing:
+
+In the server folder, "npm test" should be run to conduct integration testing for routes. Only tests for login and getting group
+
+### Login test
+
+- Test Case 1: should return a 401 status code for invalid credentials.
+- Test Case 2: should return a 200 status code and user data for valid credentials.
+
+### Getting group test
+
+- Test Case 1: should return an array of groups.
+- Test Case 2: should handle errors and return a 500 status code for database issues.
+
+### Deleting group test
+
+- Test Case 1: should send a DELETE request to the /api/deleteGroup/${groupNameWithSpaces} route (Meow Meow), where "Meow Meow" is an existing group name.
+- Test Case 2: should send a DELETE request to the /api/deleteGroup/nonExistingGroupName route, where "nonExistingGroupName" is a group name that doesn't exist.
+
 ## Routes:
 
 ### Login

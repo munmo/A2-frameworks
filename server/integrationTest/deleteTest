@@ -1,0 +1,56 @@
+const request = require('supertest');
+const express = require('express');
+const { MongoClient } = require('mongodb');
+const should = require('chai').should();
+
+describe('Delete Group API', () => {
+  let db;
+  let app;
+  let server;
+
+  before(async function () {
+    const uri = 'mongodb://localhost:27017/chat'; 
+
+    try {
+      const client = new MongoClient(uri);
+      await client.connect();
+      db = client.db();
+
+        app = express();
+        
+      app.delete('/api/deleteGroup/:groupName', async (req, res) => {
+        
+      });
+
+      server = app.listen(3000); // Start the Express app
+    } catch (err) {
+      console.error('Error in setup:', err);
+    }
+  });
+
+  after(async function () {
+    try {
+      await db.client.close();
+      server.close(); // Close the Express app
+    } catch (err) {
+      console.error('Error in teardown:', err);
+    }
+  });
+
+ it('should delete an existing group with spaces in the name and return a success message', async () => {
+  const groupNameWithSpaces = 'Meow%20Meow'; // Replace spaces with %20
+  const response = await request(server)
+    .delete(`/api/deleteGroup/${groupNameWithSpaces}`);
+
+  response.should.have.status(200);
+  response.body.should.have.property('message', 'Group deleted successfully');
+});
+
+  it('should return a 404 status code for a non-existing group', async () => {
+    const response = await request(server)
+      .delete('/api/deleteGroup/nonExistingGroupName');
+
+    response.should.have.status(404);
+    response.body.should.have.property('message', 'Group not found');
+  });
+});
