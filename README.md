@@ -144,7 +144,17 @@ Separate modules and functions were used for distinct requirements.
 | Return value              | Success with user details or error message.                                                                                                                                                        |
 | Technical Explanation     | The function first removes the user's pending interest in pendingRequest collection. Then, it finds the user in users collection and updates their group array to include the approved group name. |
 | Client-Server interaction | Approved users can access the channels within the approved group.                                                                                                                                  |
+### Delete group
 
+| Aspect                    | Description                                                                                     |
+| ------------------------- | ----------------------------------------------------------------------------------------------- |
+| Description               | This function handles fetching all existing group names and allowing deletion.                                        |
+| Route                     | /api/deleteGroups                                                                                  |
+| Method                    | POST                                                                                             |
+| Parameters                |                                                                                               |
+| Return value              | Success with group details.                                                                     |
+| Technical Explanation     | Reads groups collection to find all existing group names and remove the group from the groups collection according to the Super or Group admin's actions.                                       |
+| Client-Server interaction | Only approved/authorized users can view this page via Dashboard page. |
 ### Get channels
 
 | Aspect                    | Description                                                                                                                                                                    |
